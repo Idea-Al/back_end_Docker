@@ -15,8 +15,10 @@ class DefaultController extends AbstractController
      */
     public function index(UserRepository $userRepo): Response
     {
-       
+        $users = $userRepo->findAll();
+        dd($users);
 
+       
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
         ]);

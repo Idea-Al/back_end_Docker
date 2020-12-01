@@ -10,7 +10,10 @@ ARG CADDY_VERSION=2.1.1
 # "php" stage
 FROM php:${PHP_VERSION}-fpm-alpine AS symfony_php
 
+RUN docker-php-ext-install mysqli pdo_mysql
+#RUN docker-php-ext-install mbstring opcache pdo pdo_mysql mysql mysqli
 # persistent / runtime deps
+RUN docker-php-ext-install mysqli
 RUN apk add --no-cache \
         acl \
         fcgi \
@@ -76,19 +79,13 @@ ARG STABILITY="stable"
 ENV STABILITY ${STABILITY:-stable}
 
 # Allow to select skeleton version
-ARG SYMFONY_VERSION="5.2.0"
+ARG SYMFONY_VERSION=""
 
 # Download the Symfony skeleton and leverage Docker cache layers
 RUN composer create-project "symfony/skeleton ${SYMFONY_VERSION}" . --stability=$STABILITY --prefer-dist --no-dev --no-progress --no-interaction; \
 	composer clear-cache
 
 ###> recipes ###
-###> doctrine/doctrine-bundle ###
-RUN apk add --no-cache --virtual .pgsql-deps postgresql-dev; \
-	docker-php-ext-install -j$(nproc) pdo_pgsql; \
-	apk add --no-cache --virtual .pgsql-rundeps so:libpq.so.5; \
-	apk del .pgsql-deps
-###< doctrine/doctrine-bundle ###
 ###< recipes ###
 
 COPY . .

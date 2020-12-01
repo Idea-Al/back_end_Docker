@@ -16,8 +16,8 @@ services:
       start_period: 30s
     environment:
       # Run "composer require symfony/orm-pack" to install and configure Doctrine ORM
-      DATABASE_URL: postgresql://${POSTGRES_USER:-symfony}:${POSTGRES_PASSWORD:-ChangeMe}@database:5432/${POSTGRES_DB:-app}?serverVersion=${POSTGRES_VERSION:-13}
-      SYMFONY_VERSION:
+      DATABASE_URL: mysql://${MYSQL_USER:-gyro}:${MYSQL_ROOT_PASSWORD:-passion}@database:3306/${MYSQL_DATABASE:-ideal}
+      SYMFONY_VERSION: '5.2'
 
   caddy:
     build:
@@ -35,18 +35,39 @@ services:
 
 ###> doctrine/doctrine-bundle ###
   database:
-    image: postgres:${POSTGRES_VERSION:-13}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMe}
-      POSTGRES_USER: ${POSTGRES_USER:-symfony}
-    volumes:
-      - db-data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      image: mysql
+      command: --default-authentication-plugin=mysql_native_password
+      restart: unless-stopped
+      ports:
+        - 3307:3307
+      environment:
+        MYSQL_DATABASE: ideal
+        MYSQL_ROOT_PASSWORD: passion
+        MYSQL_USER: gyro
+        MYSQL_PASSWORD: passion
+        
+  phpmyadmin:
+      depends_on:
+        - database
+      image: phpmyadmin
+      restart: always
+      ports:
+        - 8081:80
+      environment:
+        PMA_HOST: database
+        PMA_PORT: 3306
+      links:
+        - database
 
+  # ppgadmin:
+  #   depends_on:
+  #       - database
+  #   image: dockage/phppgadmin:latest
+  #   restart: always
+  #   ports:
+  #     - 8082:80
+  #   environment:
+  #     PHP_PG_HOST: database
 volumes:
   caddy_data:
   caddy_config:

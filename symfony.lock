@@ -215,6 +215,9 @@
     "symfony/mime": {
         "version": "v5.1.8"
     },
+    "symfony/orm-pack": {
+        "version": "v2.0.0"
+    },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.20.0"
     },
