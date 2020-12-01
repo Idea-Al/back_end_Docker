@@ -70,7 +70,8 @@ class AppFixtures extends Fixture
                 'description' => "Je suis la pour passer le temps et fracasser du noob"
             ]
         ];
-        
+
+
         $rhythmList = [];
         $roleList = [];
         $technoList = [];
@@ -319,6 +320,22 @@ class AppFixtures extends Fixture
                 $manager->persist($userFriend);
             }
         }
+        for ($m = 0; $m < 15; $m++ ){
+            $message = new Message();
+            
+            $sender = $userList[mt_rand(0, count($userList) - 1)];
+            $receiver = $userList[mt_rand(0, count($userList) - 1)];
+            $projectSubject = $projectList[mt_rand(0, count($projectList) - 1)];
+
+            if($sender != $receiver){
+                $message->setText($faker->text);
+                $message->setSender($sender);
+                $message->setReceiver($receiver);
+                $message->setProject($projectSubject);
+
+                $manager->persist($message);
+            }
+        }     
         $manager->flush();
     }
 }

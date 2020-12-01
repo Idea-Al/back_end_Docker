@@ -20,7 +20,7 @@ RUN apk add --no-cache \
         file \
         gettext \
         git \
-        jq \
+        jq \ 
     ;
 
 ARG APCU_VERSION=5.1.19
@@ -79,7 +79,7 @@ ARG STABILITY="stable"
 ENV STABILITY ${STABILITY:-stable}
 
 # Allow to select skeleton version
-ARG SYMFONY_VERSION=""
+ARG SYMFONY_VERSION="5.2"
 
 # Download the Symfony skeleton and leverage Docker cache layers
 RUN composer create-project "symfony/skeleton ${SYMFONY_VERSION}" . --stability=$STABILITY --prefer-dist --no-dev --no-progress --no-interaction; \
