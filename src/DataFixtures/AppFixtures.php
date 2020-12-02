@@ -79,7 +79,6 @@ class AppFixtures extends Fixture
         $projectList = [];
         $complaintList = [];
 
-        #Loop for the rythm
         foreach ($rhythms as $rhythmName) {
             $rhythm = new Rhythm();
             $rhythm->setName($rhythmName['name']);
@@ -87,7 +86,7 @@ class AppFixtures extends Fixture
             $rhythmList[] = $rhythm;
             $manager->persist($rhythm);
         }
-         #Loop for the level
+
         foreach ($levels as $levelName) {
             $level = new Level();
             $level->setName($levelName['name']);
@@ -95,14 +94,14 @@ class AppFixtures extends Fixture
             $levelList[] = $level;
             $manager->persist($level);
         }
-         #Loop for the role
+
         foreach ($roles as $roleName) {
             $role = new Role();
             $role->setName($roleName);
             $roleList[] = $role;
             $manager->persist($role);
         }
-         #Loop for the techno
+
         foreach ($technos as $technoName) {
             $techno = new Techno();
             $techno->setName($technoName);
@@ -110,14 +109,14 @@ class AppFixtures extends Fixture
             $technoList[] = $techno;
             $manager->persist($techno);
         }
-         #Loop for the job
+
         foreach ($jobs as $jobName) {
             $job = new Job();
             $job->setName($jobName);
             $jobList[] = $job;
             $manager->persist($job);
         }
-        #Create 4 complaints
+
         for ($i = 0; $i < 4; $i++) {
             $complaint = new Complaint;
             $complaint->setName($faker->sentence(4, true));
@@ -125,7 +124,6 @@ class AppFixtures extends Fixture
             $manager->persist($complaint);
         }
 
-        // We create 10 persons
         for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user->setUsername($faker->name);
@@ -141,14 +139,11 @@ class AppFixtures extends Fixture
             $user->setJob($jobList[mt_rand(0, count($jobList) - 1)]);
             $user->setSlug($this->slugger->slugify($user->getUsername()));
 
-
             $userDescription = new UserDescription;
             $userDescription->setUser($user);
             $userDescription->setPurpose($faker->text);
             $userDescription->setJourney($faker->text);
             $userDescription->setAboutMe($faker->text);
-
-
 
             //add Realization
             for ($j = 0; $j < mt_rand(1, 3); $j++) {
@@ -172,7 +167,6 @@ class AppFixtures extends Fixture
             }
         }
 
-        // We create 10 projects
         for ($i = 0; $i < 10; $i++) {
             $project = new Project;
             $name = $project->setName($faker->sentence(4), true);
@@ -216,8 +210,9 @@ class AppFixtures extends Fixture
         for ($m = 0; $m < 20; $m++) {
             $projectFav = new ProjectFav;
             for ($j = 0; $j < mt_rand(1, 3); $j++) {
-                // je recup une techno au hasard
+                //Get a random user 
                 $userProjectFav = $userList[mt_rand(0, count($userList) - 1)];
+                //Get a random project
                 $projectFavori = $projectList[mt_rand(0, count($projectList) - 1)];
 
                 if (!$projectFav->getUser() == $userProjectFav && !$projectFav->getProject() == $projectFavori) {
@@ -234,7 +229,6 @@ class AppFixtures extends Fixture
             $userFav->setUserLiked($userList[mt_rand(0, count($userList) - 1)]);
 
             for ($n = 0; $n < mt_rand(1, 3); $n++) {
-                // je recup une techno au hasard
                 $userLikes = $userList[mt_rand(0, count($userList) - 1)];
                 $userLiked = $userList[mt_rand(0, count($userList) - 1)];
                 if ($userLikes != $userLiked && !$userFav->getUserLike() == $userLikes && !$userFav->getuserLiked() == $userLiked) {
@@ -290,13 +284,14 @@ class AppFixtures extends Fixture
                 $manager->persist($report);            
             }
         }
-
+        
         for ($i = 0; $i < 15; $i++) {
             $userFriend = new UserFriend();
             $friendUser =  $userList[mt_rand(0, count($userList) - 1)];
             $friendWithMe = $userList[mt_rand(0, count($userList) - 1)];
+
+            #If the sender of the friend request is different from the receiver 
             if ($friendUser != $friendWithMe) {
-               
                 $userFriend->setUser($friendWithMe);
                 $userFriend->setFriend($friendUser);
                 $isAnswered = $userFriend->setIsAnswered($faker->boolean(50));
@@ -314,7 +309,7 @@ class AppFixtures extends Fixture
             $sender = $userList[mt_rand(0, count($userList) - 1)];
             $receiver = $userList[mt_rand(0, count($userList) - 1)];
             $projectSubject = $projectList[mt_rand(0, count($projectList) - 1)];
-
+             #If message sender is different from the receiver
             if($sender != $receiver){
                 $message->setText($faker->text);
                 $message->setSender($sender);
