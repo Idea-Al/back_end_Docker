@@ -39,7 +39,6 @@ class AppFixtures extends Fixture
     {
         $faker = Faker\Factory::create('fr_FR');
 
-        # Create some array without faker
         $rhythms = [
             [
                 'name' => 'fou furieux',
@@ -52,8 +51,11 @@ class AppFixtures extends Fixture
         ];
 
         $roles = ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_SUPERADMIN'];
+
         $technos = ['PHP', 'Javascript', 'Html', 'MySQL', 'React', 'Symfony', 'Laravel'];
+
         $jobs = ['web-designer', 'developpeur', 'sys-admin'];
+
         $levels = [
             [
                 'name' => 'noob',
