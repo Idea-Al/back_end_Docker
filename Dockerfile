@@ -13,7 +13,6 @@ FROM php:${PHP_VERSION}-fpm-alpine AS symfony_php
 RUN docker-php-ext-install mysqli pdo_mysql
 #RUN docker-php-ext-install mbstring opcache pdo pdo_mysql mysql mysqli
 # persistent / runtime deps
-RUN docker-php-ext-install mysqli
 RUN apk add --no-cache \
         acl \
         fcgi \
@@ -115,6 +114,7 @@ RUN xcaddy build \
     --with github.com/dunglas/vulcain/caddy
 
 FROM caddy:${CADDY_VERSION} AS symfony_caddy
+
 
 WORKDIR /srv/app
 
