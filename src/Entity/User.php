@@ -2,13 +2,19 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ApiResource(
+ *       attributes={
+ *      "denormalizationContext"={"groups"={"user:write"}}, 
+ *      } 
+ * )
  */
 class User
 {
@@ -16,21 +22,25 @@ class User
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("user:read")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("user:read")
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("user:read")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("user:read")
      */
     private $avatar;
 
@@ -41,6 +51,7 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("user:read")
      */
     private $school;
 
@@ -51,6 +62,7 @@ class User
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("user:read")
      */
     private $is_active;
 
@@ -61,11 +73,13 @@ class User
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("user:read")
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups("user:read")
      */
     private $updated_at;
 
