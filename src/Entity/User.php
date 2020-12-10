@@ -767,4 +767,11 @@ class User implements UserInterface
 
         return $this;
     }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
 }

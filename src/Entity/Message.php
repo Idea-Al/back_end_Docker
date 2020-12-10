@@ -26,7 +26,7 @@ class Message
     private $sender;
     
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="messages_receive")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="messages_received")
      * @ORM\JoinColumn(nullable=false)
      */
     private $receiver;
@@ -42,20 +42,19 @@ class Message
      */
     private $project;
 
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getReceiver(): ?User
+    public function getText(): ?string
     {
-        return $this->receiver;
+        return $this->text;
     }
 
-    public function setReceiver(?User $receiver): self
+    public function setText(string $text): self
     {
-        $this->receiver = $receiver;
+        $this->text = $text;
 
         return $this;
     }
@@ -72,14 +71,14 @@ class Message
         return $this;
     }
 
-    public function getText(): ?string
+    public function getReceiver(): ?User
     {
-        return $this->text;
+        return $this->receiver;
     }
 
-    public function setText(string $text): self
+    public function setReceiver(?User $receiver): self
     {
-        $this->text = $text;
+        $this->receiver = $receiver;
 
         return $this;
     }
@@ -95,5 +94,6 @@ class Message
 
         return $this;
     }
+
 }
 
