@@ -2,7 +2,7 @@ security:
     encoders:
         App\Entity\User:
             algorithm: auto
-        
+        #https://medium.com/@yusufbiberoglu/jwt-authentication-and-refresh-token-on-api-platform-7c6ecaa8e236
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -16,6 +16,18 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api:
+            pattern:  ^/
+            stateless: true
+            anonymous: true
+            provider: app_user_provider
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+            json_login:
+                check_path: /login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
         main:
             anonymous: true
             lazy: true
