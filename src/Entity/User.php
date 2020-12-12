@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\Api\V1\UserController;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +16,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *       attributes={
  *      "denormalizationContext"={"groups"={"user:write"}}, 
+ *      "post_publication"={
+ *         "method"="POST",
+ *         "path"="/books/{id}/publication",
+ *         "controller"=UserController::class,
  *      } 
  * )
  */
