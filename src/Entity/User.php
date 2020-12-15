@@ -2,21 +2,30 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Api\FilterInterface;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
  *       attributes={
- *      "denormalizationContext"={"groups"={"user:write"}}, 
+ *       "normalizationContext"={"groups"={"user:read"}},
+ *       "denormalizationContext"={"groups"={"user:write"}}, 
  *      } 
  * )
+ * 
+ * @UniqueEntity(fields={"pseudo"})
+ * @UniqueEntity(fields={"email"})
  */
 class User implements UserInterface
 {
@@ -30,15 +39,34 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("user:read")
+     * @Groups({"user:read", "user:write"})
+     *
      */
-    private $name;
+    private $pseudo;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     * @Groups("user:read")
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"user:read", "user:write"})
+     * 
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
+
+    /**
+     * @var string The hashed password
+     * @ORM\Column(type="string", length=255)
+     *
+     */
+    private $password;
+
+
+    /**
+     * @Groups("user:write")
+     * 
+     *
+     */
+    private $plainPassword;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -46,10 +74,6 @@ class User implements UserInterface
      */
     private $avatar;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $password;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -92,7 +116,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Job::class, inversedBy="users")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $job;
 
@@ -140,15 +164,16 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Message::class, mappedBy="receiver")
+     * @Groups("user:read")
      */
     private $messages_received;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $slug;
+    // /**
+    //  * @ORM\Column(type="string", length=255, nullable = true)
+    //  */
+    // private $slug;
 
-     /**
+    /**
      * @ORM\OneToMany(targetEntity=UserFav::class, mappedBy="userLiked", orphanRemoval=true)
      */
     private $send_fav;
@@ -177,6 +202,9 @@ class User implements UserInterface
     {
         $this->created_at = new \DateTime();
         $this->updated_at = new \DateTime();
+        $this->is_active = false;
+        $this->is_banned = false;
+        $this->status = true;
         $this->logbooks = new ArrayCollection();
         $this->favorite_projects = new ArrayCollection();
         $this->learnings = new ArrayCollection();
@@ -191,7 +219,7 @@ class User implements UserInterface
         $this->realizations = new ArrayCollection();
     }
 
-     /**
+    /**
      * @see UserInterface
      */
     public function getRoles(): array
@@ -229,7 +257,7 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+         $this->plainPassword = null;
     }
 
     /**
@@ -267,14 +295,14 @@ class User implements UserInterface
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getPseudo(): ?string
     {
-        return $this->name;
+        return $this->pseudo;
     }
 
-    public function setName(string $name): self
+    public function setPseudo(string $pseudo): self
     {
-        $this->name = $name;
+        $this->pseudo = $pseudo;
 
         return $this;
     }
@@ -387,17 +415,17 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
+    // public function getSlug(): ?string
+    // {
+    //     return $this->slug;
+    // }
 
-    public function setSlug(string $slug): self
-    {
-        $this->slug = $slug;
+    // public function setSlug(string $slug): self
+    // {
+    //     $this->slug = $slug;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
 
     public function getJob(): ?Job
@@ -774,4 +802,19 @@ class User implements UserInterface
 
         return $this;
     }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    /*
+    * @SerializedName("moui")
+    */
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
 }
