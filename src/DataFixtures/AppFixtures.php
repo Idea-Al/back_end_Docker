@@ -126,7 +126,7 @@ class AppFixtures extends Fixture
 
         for ($i = 0; $i < 10; $i++) {
             $user = new User();
-            $user->setName($faker->name);
+            $user->setPseudo($faker->name);
             $user->setEmail($faker->email);
             $user->setAvatar($faker->word);
             $user->setPassword($this->passwordEncoder->encodePassword(
@@ -139,7 +139,7 @@ class AppFixtures extends Fixture
             $user->setIsBanned($faker->boolean(50));
             $user->setRhythm($rhythmList[mt_rand(0, count($rhythmList) - 1)]);
             $user->setJob($jobList[mt_rand(0, count($jobList) - 1)]);
-            $user->setSlug($this->slugger->slugify($user->getName()));
+            //$user->setSlug($this->slugger->slugify($user->getName()));
 
             $userDescription = new UserDescription;
             $userDescription->setUser($user);

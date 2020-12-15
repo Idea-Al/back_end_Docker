@@ -68,11 +68,6 @@ class Project
     private $technos;
 
     /**
-     *  * @ORM\OneToOne(targetEntity=ProjectDescription::class, mappedBy="project", orphanRemoval=true)
-     */
-    private $description;
-
-    /**
      * @ORM\OneToMany(targetEntity=ProjectFav::class, mappedBy="project",  orphanRemoval=true)
      */
     private $favorites;
@@ -102,6 +97,11 @@ class Project
      */
     private $messages;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Logbook::class, mappedBy="project")
+     */
+    private $logbooks;
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
@@ -110,6 +110,7 @@ class Project
         $this->favorites = new ArrayCollection();
         $this->jobs = new ArrayCollection();
         $this->messages = new ArrayCollection();
+        $this->logbooks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -262,19 +263,7 @@ class Project
 
         return $this;
     }
-
-    public function getDescription(): ?ProjectDescription
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?ProjectDescription $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
+    
     /**
      * @return Collection|ProjectFav[]
      */
@@ -371,6 +360,36 @@ class Project
             // set the owning side to null (unless already changed)
             if ($message->getProject() === $this) {
                 $message->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Logbook[]
+     */
+    public function getLogbooks(): Collection
+    {
+        return $this->logbooks;
+    }
+
+    public function addLogbook(Logbook $logbook): self
+    {
+        if (!$this->logbooks->contains($logbook)) {
+            $this->logbooks[] = $logbook;
+            $logbook->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLogbook(Logbook $logbook): self
+    {
+        if ($this->logbooks->removeElement($logbook)) {
+            // set the owning side to null (unless already changed)
+            if ($logbook->getProject() === $this) {
+                $logbook->setProject(null);
             }
         }
 
