@@ -9,3 +9,6 @@
 /vendor/
 /.docker/
 ###< symfony/framework-bundle ###
+
+
+/config/jwt/*pem
