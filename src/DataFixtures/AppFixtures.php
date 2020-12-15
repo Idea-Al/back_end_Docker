@@ -2,8 +2,6 @@
 
 namespace App\DataFixtures;
 
-#use App\Entity\Complaint;
-
 use App\Entity\Complaint;
 use App\Entity\Job;
 use App\Entity\Learning;
@@ -15,8 +13,6 @@ use App\Entity\ProjectDescription;
 use App\Entity\ProjectFav;
 use App\Entity\User;
 use App\Entity\UserDescription;
-#use App\Entity\UserFav;
-# use App\Entity\UserFriend;
 use App\Entity\UserReport;
 use App\Entity\Realization;
 use App\Entity\Rhythm;
@@ -28,20 +24,25 @@ use App\Service\Slugger;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
 
     private $slugger;
+    private $passwordEncoder;
 
-    public function __construct(Slugger $slugger)
+    public function __construct(Slugger $slugger,UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->slugger = $slugger;
+        $this->passwordEncoder = $passwordEncoder;
+
     }
 
     public function load(ObjectManager $manager)
     {
         $faker = Faker\Factory::create('fr_FR');
+
         $rhythms = [
             [
                 'name' => 'fou furieux',
@@ -54,8 +55,11 @@ class AppFixtures extends Fixture
         ];
 
         $roles = ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_SUPERADMIN'];
+
         $technos = ['PHP', 'Javascript', 'Html', 'MySQL', 'React', 'Symfony', 'Laravel'];
+
         $jobs = ['web-designer', 'developpeur', 'sys-admin'];
+
         $levels = [
             [
                 'name' => 'noob',
@@ -70,7 +74,8 @@ class AppFixtures extends Fixture
                 'description' => "Je suis la pour passer le temps et fracasser du noob"
             ]
         ];
-        
+
+
         $rhythmList = [];
         $roleList = [];
         $technoList = [];
@@ -79,7 +84,6 @@ class AppFixtures extends Fixture
         $userList = [];
         $projectList = [];
         $complaintList = [];
-
 
         foreach ($rhythms as $rhythmName) {
             $rhythm = new Rhythm();
@@ -97,12 +101,6 @@ class AppFixtures extends Fixture
             $manager->persist($level);
         }
 
-        foreach ($roles as $roleName) {
-            $role = new Role();
-            $role->setName($roleName);
-            $roleList[] = $role;
-            $manager->persist($role);
-        }
 
         foreach ($technos as $technoName) {
             $techno = new Techno();
@@ -126,30 +124,28 @@ class AppFixtures extends Fixture
             $manager->persist($complaint);
         }
 
-        // on créé 10 personnes
         for ($i = 0; $i < 10; $i++) {
             $user = new User();
-            $user->setUsername($faker->name);
+            $user->setPseudo($faker->name);
             $user->setEmail($faker->email);
             $user->setAvatar($faker->word);
-            $user->setPassword($faker->password);
+            $user->setPassword($this->passwordEncoder->encodePassword(
+                $user,
+                'team'
+                ));
             $user->setSchool($faker->text);
             $user->setStatus($faker->boolean(50));
             $user->setIsActive($faker->boolean(50));
             $user->setIsBanned($faker->boolean(50));
             $user->setRhythm($rhythmList[mt_rand(0, count($rhythmList) - 1)]);
-            $user->setRole($roleList[mt_rand(0, count($roleList) - 1)]);
             $user->setJob($jobList[mt_rand(0, count($jobList) - 1)]);
-            $user->setSlug($this->slugger->slugify($user->getUsername()));
-
+            //$user->setSlug($this->slugger->slugify($user->getName()));
 
             $userDescription = new UserDescription;
             $userDescription->setUser($user);
             $userDescription->setPurpose($faker->text);
             $userDescription->setJourney($faker->text);
             $userDescription->setAboutMe($faker->text);
-
-
 
             //add Realization
             for ($j = 0; $j < mt_rand(1, 3); $j++) {
@@ -173,7 +169,6 @@ class AppFixtures extends Fixture
             }
         }
 
-        // On crée 10 projets
         for ($i = 0; $i < 10; $i++) {
             $project = new Project;
             $name = $project->setName($faker->sentence(4), true);
@@ -185,23 +180,22 @@ class AppFixtures extends Fixture
             $project->setIsCompleted($faker->boolean(50));
             $project->setSlug($this->slugger->slugify($name->getName()));
             for ($j = 0; $j < mt_rand(1, 3); $j++) {
-                // je recup une techno au hasard
+                // get a random techno
                 $techno = $technoList[mt_rand(0, count($technoList) - 1)];
-                // je l'ajoute au projet
+                // check if it's not already added to the project and if not, add it
                 if (!$project->getTechnos()->contains($techno)) {
                     $project->addTechno($techno);
                 }
             }
             for ($l = 0; $l < mt_rand(1, 3); $l++) {
-                // je recup une techno au hasard
+                // get a random job
                 $projectJob = $jobList[mt_rand(0, count($jobList) - 1)];
-                // je l'ajoute au projet
+                // check if it's not already added to the project and if not, add it
                 if (!$project->getJobs()->contains($projectJob)) {
                     $project->addJob($projectJob);
                 }
             }
 
-            // add description
             $projectDescription = new ProjectDescription;
             $projectDescription->setPurpose($faker->text);
             $projectDescription->setTarget($faker->text);
@@ -216,11 +210,11 @@ class AppFixtures extends Fixture
         }
 
         for ($m = 0; $m < 20; $m++) {
-
             $projectFav = new ProjectFav;
             for ($j = 0; $j < mt_rand(1, 3); $j++) {
-                // je recup une techno au hasard
+                //Get a random user 
                 $userProjectFav = $userList[mt_rand(0, count($userList) - 1)];
+                //Get a random project
                 $projectFavori = $projectList[mt_rand(0, count($projectList) - 1)];
 
                 if (!$projectFav->getUser() == $userProjectFav && !$projectFav->getProject() == $projectFavori) {
@@ -230,15 +224,13 @@ class AppFixtures extends Fixture
             }
             $manager->persist($projectFav);
         }
-
-
+        
         for ($a = 0; $a < 20; $a++) {
             $userFav = new UserFav;
             $userFav->setUserLike($userList[mt_rand(0, count($userList) - 1)]);
             $userFav->setUserLiked($userList[mt_rand(0, count($userList) - 1)]);
 
             for ($n = 0; $n < mt_rand(1, 3); $n++) {
-                // je recup une techno au hasard
                 $userLikes = $userList[mt_rand(0, count($userList) - 1)];
                 $userLiked = $userList[mt_rand(0, count($userList) - 1)];
                 if ($userLikes != $userLiked && !$userFav->getUserLike() == $userLikes && !$userFav->getuserLiked() == $userLiked) {
@@ -249,10 +241,8 @@ class AppFixtures extends Fixture
             $manager->persist($userFav);
         }
 
-        // creation des niveaux des utilisateur dans une techno
         for ($b = 0; $b < 20; $b++) {
             $learning = new Learning;
-
             for ($n = 0; $n < mt_rand(1, 5); $n++) {
                 $learningUser = $userList[mt_rand(0, count($userList) - 1)];
                 $userLevel = $levelList[mt_rand(0, count($levelList) - 1)];
@@ -267,7 +257,6 @@ class AppFixtures extends Fixture
             $manager->persist($learning);
         }
 
-
         for ($c = 0; $c < 30; $c++) {
             $logbook = new LogBook;
             $logbook->setTask($faker->text);
@@ -277,8 +266,7 @@ class AppFixtures extends Fixture
             $manager->persist($logbook);
         }
 
-        for ($i = 0; $i < 15; $i++) {
-           
+        for ($i = 0; $i < 15; $i++) {   
             $report = new UserReport;
             $reporter = $userList[mt_rand(0, count($userList) - 1)];
             $reportee = $userList[mt_rand(0, count($userList) - 1)];
@@ -286,7 +274,6 @@ class AppFixtures extends Fixture
             $reasonCustomize = $complaintList[2];
 
             if ($reporter != $reportee) {
-              
                 $report->setReporter($reporter);
                 $report->setReportee($reportee);
                 $report->setIsConfirmed($faker->boolean(50));
@@ -298,16 +285,15 @@ class AppFixtures extends Fixture
                 }  
                 $manager->persist($report);            
             }
-           
         }
-
+        
         for ($i = 0; $i < 15; $i++) {
-          
             $userFriend = new UserFriend();
             $friendUser =  $userList[mt_rand(0, count($userList) - 1)];
             $friendWithMe = $userList[mt_rand(0, count($userList) - 1)];
+
+            #If the sender of the friend request is different from the receiver 
             if ($friendUser != $friendWithMe) {
-               
                 $userFriend->setUser($friendWithMe);
                 $userFriend->setFriend($friendUser);
                 $isAnswered = $userFriend->setIsAnswered($faker->boolean(50));
@@ -319,6 +305,22 @@ class AppFixtures extends Fixture
                 $manager->persist($userFriend);
             }
         }
+
+        for ($m = 0; $m < 15; $m++ ){
+            $message = new Message();            
+            $sender = $userList[mt_rand(0, count($userList) - 1)];
+            $receiver = $userList[mt_rand(0, count($userList) - 1)];
+            $projectSubject = $projectList[mt_rand(0, count($projectList) - 1)];
+             #If message sender is different from the receiver
+            if($sender != $receiver){
+                $message->setText($faker->text);
+                $message->setSender($sender);
+                $message->setReceiver($receiver);
+                $message->setProject($projectSubject);
+
+                $manager->persist($message);
+            }
+        }     
         $manager->flush();
     }
 }

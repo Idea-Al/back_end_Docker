@@ -2,45 +2,82 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Api\FilterInterface;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ApiResource(
+ *       attributes={
+ *       "normalizationContext"={"groups"={"user:read"}},
+ *       "denormalizationContext"={"groups"={"user:write"}}, 
+ *      } 
+ * )
+ * 
+ * @UniqueEntity(fields={"pseudo"})
+ * @UniqueEntity(fields={"email"})
  */
-class User
+class User implements UserInterface
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("user:read")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user:read", "user:write"})
+     *
      */
-    private $username;
+    private $pseudo;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user:read", "user:write"})
+     * 
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $avatar;
-
-    /**
+     * @var string The hashed password
      * @ORM\Column(type="string", length=255)
+     *
      */
     private $password;
 
+
+    /**
+     * @Groups("user:write")
+     * 
+     *
+     */
+    private $plainPassword;
+
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("user:read")
+     */
+    private $avatar;
+
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("user:read")
      */
     private $school;
 
@@ -51,6 +88,7 @@ class User
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("user:read")
      */
     private $is_active;
 
@@ -61,23 +99,24 @@ class User
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("user:read")
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups("user:read")
      */
     private $updated_at;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Role::class, inversedBy="users")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="json")
      */
-    private $role;
+    private $roles = [];
 
     /**
      * @ORM\ManyToOne(targetEntity=Job::class, inversedBy="users")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $job;
 
@@ -125,15 +164,16 @@ class User
 
     /**
      * @ORM\OneToMany(targetEntity=Message::class, mappedBy="receiver")
+     * @Groups("user:read")
      */
     private $messages_received;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $slug;
+    // /**
+    //  * @ORM\Column(type="string", length=255, nullable = true)
+    //  */
+    // private $slug;
 
-     /**
+    /**
      * @ORM\OneToMany(targetEntity=UserFav::class, mappedBy="userLiked", orphanRemoval=true)
      */
     private $send_fav;
@@ -162,6 +202,9 @@ class User
     {
         $this->created_at = new \DateTime();
         $this->updated_at = new \DateTime();
+        $this->is_active = false;
+        $this->is_banned = false;
+        $this->status = true;
         $this->logbooks = new ArrayCollection();
         $this->favorite_projects = new ArrayCollection();
         $this->learnings = new ArrayCollection();
@@ -174,6 +217,47 @@ class User
         $this->send_fav = new ArrayCollection();
         $this->receive_fav = new ArrayCollection();
         $this->realizations = new ArrayCollection();
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUsername(): string
+    {
+        return (string) $this->email;
+    }
+
+
+
+    /**
+     * @see UserInterface
+     */
+    public function getSalt()
+    {
+        // not needed when using the "bcrypt" algorithm in security.yaml
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+         $this->plainPassword = null;
     }
 
     /**
@@ -211,14 +295,14 @@ class User
         return $this->id;
     }
 
-    public function getUsername(): ?string
+    public function getPseudo(): ?string
     {
-        return $this->username;
+        return $this->pseudo;
     }
 
-    public function setUsername(string $username): self
+    public function setPseudo(string $pseudo): self
     {
-        $this->username = $username;
+        $this->pseudo = $pseudo;
 
         return $this;
     }
@@ -331,29 +415,18 @@ class User
         return $this;
     }
 
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
+    // public function getSlug(): ?string
+    // {
+    //     return $this->slug;
+    // }
 
-    public function setSlug(string $slug): self
-    {
-        $this->slug = $slug;
+    // public function setSlug(string $slug): self
+    // {
+    //     $this->slug = $slug;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getRole(): ?Role
-    {
-        return $this->role;
-    }
-
-    public function setRole(?Role $role): self
-    {
-        $this->role = $role;
-
-        return $this;
-    }
 
     public function getJob(): ?Job
     {
@@ -722,4 +795,26 @@ class User
 
         return $this;
     }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    /*
+    * @SerializedName("moui")
+    */
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
 }

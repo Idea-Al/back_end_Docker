@@ -13,14 +13,13 @@ FROM php:${PHP_VERSION}-fpm-alpine AS symfony_php
 RUN docker-php-ext-install mysqli pdo_mysql
 #RUN docker-php-ext-install mbstring opcache pdo pdo_mysql mysql mysqli
 # persistent / runtime deps
-RUN docker-php-ext-install mysqli
 RUN apk add --no-cache \
         acl \
         fcgi \
         file \
         gettext \
         git \
-        jq \
+        jq \ 
     ;
 
 ARG APCU_VERSION=5.1.19
@@ -79,7 +78,7 @@ ARG STABILITY="stable"
 ENV STABILITY ${STABILITY:-stable}
 
 # Allow to select skeleton version
-ARG SYMFONY_VERSION=""
+ARG SYMFONY_VERSION="5.2"
 
 # Download the Symfony skeleton and leverage Docker cache layers
 RUN composer create-project "symfony/skeleton ${SYMFONY_VERSION}" . --stability=$STABILITY --prefer-dist --no-dev --no-progress --no-interaction; \
@@ -115,6 +114,7 @@ RUN xcaddy build \
     --with github.com/dunglas/vulcain/caddy
 
 FROM caddy:${CADDY_VERSION} AS symfony_caddy
+
 
 WORKDIR /srv/app
 
