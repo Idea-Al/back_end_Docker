@@ -18,10 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
- *       attributes={
- *       "normalizationContext"={"groups"={"user:read"}},
- *       "denormalizationContext"={"groups"={"user:write"}}, 
- *      } 
+ *     normalizationContext={"groups"={"user:read"}},
+ *     denormalizationContext={"groups"={"user:write"}}
  * )
  * 
  * @UniqueEntity(fields={"pseudo"})
@@ -64,6 +62,7 @@ class User implements UserInterface
     /**
      * @Groups("user:write")
      * 
+     * @SerializedName("password")
      *
      */
     private $plainPassword;
@@ -808,9 +807,6 @@ class User implements UserInterface
         return $this->plainPassword;
     }
 
-    /*
-    * @SerializedName("moui")
-    */
     public function setPlainPassword(string $plainPassword): self
     {
         $this->plainPassword = $plainPassword;
