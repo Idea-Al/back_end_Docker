@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Api\FilterInterface;
 use App\Repository\UserRepository;
@@ -19,7 +20,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
  *     normalizationContext={"groups"={"user:read"}},
- *     denormalizationContext={"groups"={"user:write"}}
+ *     denormalizationContext={"groups"={"user:write"}},
+ *     iri="http://schema.org/User"
  * )
  * 
  * @UniqueEntity(fields={"pseudo"})
@@ -38,7 +40,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"user:read", "user:write"})
-     *
+     * @ApiProperty(iri="http://schema.org/pseudo")
      */
     private $pseudo;
 
@@ -86,24 +88,24 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="boolean")
      */
-    private $status;
+    private $status = true ;
 
     /**
      * @ORM\Column(type="boolean")
      * @Groups("user:read")
      */
-    private $is_active;
+    private $is_active = false;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $is_banned;
+    private $is_banned = false;
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups("user:read")
      */
-    private $created_at;
+    private $created_at ;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -203,9 +205,6 @@ class User implements UserInterface
     {
         $this->created_at = new \DateTime();
         $this->updated_at = new \DateTime();
-        $this->is_active = false;
-        $this->is_banned = false;
-        $this->status = true;
         $this->logbooks = new ArrayCollection();
         $this->favorite_projects = new ArrayCollection();
         $this->learnings = new ArrayCollection();

@@ -37,7 +37,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     public function persist($data, array $context = [])
     {
         //dd('couocu');
-       // dd($data->getPlainPassword());
+        dd($data);
         if ($data->getPlainPassword()) {
             $data->setPassword(
                 $this->_passwordEncoder->encodePassword(
@@ -47,8 +47,8 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
             );
 
             $data->eraseCredentials();
-        }
 
+        }
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();
     }

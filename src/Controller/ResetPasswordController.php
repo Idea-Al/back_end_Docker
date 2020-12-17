@@ -130,8 +130,9 @@ class ResetPasswordController extends ApiController
             $this->cleanSessionAfterReset();
 
 
+            // TODO: changer la redirection 
             //return $this->redirect('http://adressedusite.com');
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute('api_entrypoint');
         }
 
         return $this->render('reset_password/reset.html.twig', [
