@@ -61,13 +61,14 @@ class User implements UserInterface
     private $password;
 
 
+    // @Assert\Regex(pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i",
+    //^(?=.{10,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$
     /**
      * @Groups("user:write")
      * 
      * @SerializedName("password")
      *
      * @Assert\NotBlank(message="New password can not be blank.")
-     * @Assert\Regex(pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/i",
      *  message="Password is required to be minimum 6 chars in length and to include at least one letter and one number and one special character.")
      */
     private $plainPassword;
@@ -200,6 +201,7 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity=Realization::class, mappedBy="user",cascade={"persist"})
      */
     private $realizations;
+
 
     public function __construct()
     {
