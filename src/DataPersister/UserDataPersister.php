@@ -2,13 +2,16 @@
 
 namespace App\DataPersister;
 
-use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
-use App\Security\EmailVerifier;
+use App\Entity\User;
+use App\Service\MailerService;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
+
 
 /**
  *
@@ -17,18 +20,18 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
 {
     private $_entityManager;
     private $_passwordEncoder;
-    private $_emailVerifier;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UserPasswordEncoderInterface $passwordEncoder,
-        EmailVerifier $_emailVerifier
+        MailerService $mailerService,
+        ResetPasswordHelperInterface $resetPasswordHelper
     ) {
         $this->_entityManager = $entityManager;
         $this->_passwordEncoder = $passwordEncoder;
-        $this->_emailVerifier = $_emailVerifier;
+        $this->mailerService = $mailerService;
+        $this->resetPasswordHelper = $resetPasswordHelper;
     }
-
     /**
      * {@inheritdoc}
      */
@@ -42,28 +45,23 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
      */
     public function persist($data, array $context = [])
     {
-        if ($data->getPlainPassword()) {
-            $data->setPassword(
-                $this->_passwordEncoder->encodePassword(
-                    $data,
-                    $data->getPlainPassword()
-                )
-            );
 
-            $data->eraseCredentials();
-
-        }
+        $confirmationToken = $data->setConfirmationToken($this->generateToken());
+        $data->setPassword($this->_passwordEncoder->encodePassword($data, $data->getPlainPassword()));
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();
 
-        // generate a signed url and email it to the user
-        $this->_emailVerifier->sendEmailConfirmation('app_verify_email', $data,
-                (new TemplatedEmail())
-                    ->from(new Address('essaiphpmailer@gmail.com', 'Confirm account'))
-                    ->to($data->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
-            );
+
+        $to = $data->getEmail();
+        $username = $data->getUsername();
+        $tokenLifeTime = $this->resetPasswordHelper->getTokenLifetime();
+
+        $this->mailerService->sendToken($confirmationToken, $to, $username, $tokenLifeTime, 'Confirmation ', 'registration/confirmation_email.html.twig');
+
+        
+
+        return new JsonResponse("coucou", 201);
+        //return $this->respondWithSuccess(sprintf('Votre inscription a été validée, vous aller recevoir un email de confirmation pour activer votre compte et pouvoir vous connecter', $data->getPseudo()));
     }
 
     /**
@@ -73,5 +71,15 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
     {
         $this->_entityManager->remove($data);
         $this->_entityManager->flush();
+    }
+
+     /**
+     * generate a token
+     *
+     * 
+     */
+    private function generateToken()
+    {
+        return rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
     }
 }
