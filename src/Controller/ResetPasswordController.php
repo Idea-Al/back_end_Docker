@@ -45,8 +45,6 @@ class ResetPasswordController extends ApiController
         // $form->handleRequest($request);;
         $json = json_decode($request->getContent(), true);
 
-
-
         $form->submit($json);
 
         //dd($json);
@@ -100,12 +98,15 @@ class ResetPasswordController extends ApiController
         try {
             $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
         } catch (ResetPasswordExceptionInterface $e) {
+
             $this->addFlash('reset_password_error', sprintf(
                 'There was a problem validating your reset request - %s',
                 $e->getReason()
             ));
 
-            return $this->redirectToRoute('app_forgot_password_request');
+           // return $this->redirectToRoute('app_forgot_password_request');
+           // TODO: Customize template 
+           return $this->render('reset_password/token-expire.html.twig');
         }
 
         // The token is valid; allow the user to change their password.
