@@ -25,7 +25,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     denormalizationContext={"groups"={"passwordRequest:write"}},
  * )
  */
-final class ResetPasswordRequest 
+final class ResedddddtPasswordRequest 
 {
 
 
@@ -41,7 +41,7 @@ final class ResetPasswordRequest
      *
      * @Assert\NotBlank
      * @Groups({"passwordRequest:read", "passwordRequest:write"})
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="email" ) 
+     * @ORM\ManyToOne(targetEntity=User::class ) 
      * @ORM\JoinColumn(nullable=false)
      */
     public $user;
