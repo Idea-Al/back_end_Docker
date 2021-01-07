@@ -24,22 +24,25 @@ use App\Service\Slugger;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
 
     private $slugger;
+    private $passwordEncoder;
 
-    public function __construct(Slugger $slugger)
+    public function __construct(Slugger $slugger,UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->slugger = $slugger;
+        $this->passwordEncoder = $passwordEncoder;
+
     }
 
     public function load(ObjectManager $manager)
     {
         $faker = Faker\Factory::create('fr_FR');
 
-        # Create some array without faker
         $rhythms = [
             [
                 'name' => 'fou furieux',
@@ -52,8 +55,11 @@ class AppFixtures extends Fixture
         ];
 
         $roles = ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_SUPERADMIN'];
+
         $technos = ['PHP', 'Javascript', 'Html', 'MySQL', 'React', 'Symfony', 'Laravel'];
+
         $jobs = ['web-designer', 'developpeur', 'sys-admin'];
+
         $levels = [
             [
                 'name' => 'noob',
@@ -95,12 +101,6 @@ class AppFixtures extends Fixture
             $manager->persist($level);
         }
 
-        foreach ($roles as $roleName) {
-            $role = new Role();
-            $role->setName($roleName);
-            $roleList[] = $role;
-            $manager->persist($role);
-        }
 
         foreach ($technos as $technoName) {
             $techno = new Techno();
@@ -126,18 +126,20 @@ class AppFixtures extends Fixture
 
         for ($i = 0; $i < 10; $i++) {
             $user = new User();
-            $user->setUsername($faker->name);
+            $user->setPseudo($faker->name);
             $user->setEmail($faker->email);
             $user->setAvatar($faker->word);
-            $user->setPassword($faker->password);
+            $user->setPassword($this->passwordEncoder->encodePassword(
+                $user,
+                'team'
+                ));
             $user->setSchool($faker->text);
             $user->setStatus($faker->boolean(50));
             $user->setIsActive($faker->boolean(50));
             $user->setIsBanned($faker->boolean(50));
             $user->setRhythm($rhythmList[mt_rand(0, count($rhythmList) - 1)]);
-            $user->setRole($roleList[mt_rand(0, count($roleList) - 1)]);
             $user->setJob($jobList[mt_rand(0, count($jobList) - 1)]);
-            $user->setSlug($this->slugger->slugify($user->getUsername()));
+            //$user->setSlug($this->slugger->slugify($user->getName()));
 
             $userDescription = new UserDescription;
             $userDescription->setUser($user);

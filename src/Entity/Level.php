@@ -2,13 +2,28 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\LevelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=LevelRepository::class)
+ * @ApiResource(
+ *      normalizationContext={"groups"={"level:read"}},
+ *      denormalizationContext={"groups"={"level:write"}},
+ *          collectionOperations={
+ *              "get"={},
+ *              "post"={},
+ *              "CheckLevel"={
+ *                  "method" ="GET",
+ *                  "path"="/levels",
+ *                  "controller"="App\Controller\Api\CheckLevel::class"  
+ * },
+ *       },
+ *)
  */
 class Level
 {
@@ -16,22 +31,25 @@ class Level
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("level:read")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"level:read", "level:write"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"level:read", "level:write"})
      */
     private $description;
 
     /**
      * @ORM\OneToMany(targetEntity=Learning::class, mappedBy="level", orphanRemoval=true, cascade={"persist"})
-     * 
+     * @Groups("level:read")
      */
     private $learnings;
 
@@ -99,5 +117,4 @@ class Level
 
         return $this;
     }
-
 }
