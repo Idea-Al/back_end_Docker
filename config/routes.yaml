@@ -12,3 +12,8 @@ api_login_check:
 gesdinet_jwt_refresh_token:
   path:       /token/refresh
   controller: gesdinet.jwtrefreshtoken::refresh
+
+
+coop_tilleuls_forgot_password:
+    resource: '@CoopTilleulsForgotPasswordBundle/Resources/config/routing.xml'
+    prefix:   '/forgot_password'

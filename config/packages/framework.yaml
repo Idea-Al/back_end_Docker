@@ -17,6 +17,3 @@ framework:
         log: true
     
     validation: { enabled: true }
-
-    serializer:
-        name_converter: false
