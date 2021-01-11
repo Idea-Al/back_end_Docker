@@ -47,4 +47,6 @@ final class ForgotPasswordEventSubscriber implements EventSubscriberInterface
         //    throw new \RuntimeException('Unable to send email');
         
     }
+
+
 }
