@@ -122,6 +122,12 @@
     "gesdinet/jwt-refresh-token-bundle": {
         "version": "v0.9.1"
     },
+    "ircmaxell/random-lib": {
+        "version": "v1.2.0"
+    },
+    "ircmaxell/security-lib": {
+        "version": "v1.1.0"
+    },
     "lcobucci/jwt": {
         "version": "3.4.2"
     },
@@ -537,7 +543,20 @@
         ]
     },
     "symfonycasts/verify-email-bundle": {
-        "version": "v1.1.0"
+        "version": "v1.1.1"
+    },
+    "tilleuls/forgot-password-bundle": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "48ab9b5581997a68245b79ac21e355152e29fcde"
+        },
+        "files": [
+            "config/packages/coop_tilleuls_forgot_password.yaml",
+            "config/routes/coop_tilleuls_forgot_password.yaml"
+        ]
     },
     "twig/extra-bundle": {
         "version": "v3.1.1"

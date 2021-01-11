@@ -35,3 +35,10 @@ services:
         arguments: ['@App\Swagger\SwaggerDecorator.inner']
         autoconfigure: false
 
+
+    # App\EventListener\ForgotPasswordEventListener:
+    #     class: AppBundle\EventListener\ForgotPasswordEventListener
+    #     arguments: ['...']
+    #     tags:
+    #         - { name: kernel.event_listener, event: coop_tilleuls_forgot_password.create_token, method: onCreateToken }
+    #         - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
