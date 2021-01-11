@@ -31,7 +31,7 @@ class ResetPasswordController extends ApiController
         $this->resetPasswordHelper = $resetPasswordHelper;
     }
 
-    /**
+     /**
      * Display & process form to request a password reset.
      *
      * @Route("", name="app_forgot_password_request")
@@ -61,7 +61,6 @@ class ResetPasswordController extends ApiController
             return $this->json((string) $form->getErrors(true), 400);
         }
     }
-
     /**
      * Confirmation page after a user has requested a password reset.
      *
