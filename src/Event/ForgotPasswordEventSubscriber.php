@@ -5,7 +5,10 @@ namespace App\Event;
 use CoopTilleuls\ForgotPasswordBundle\Event\UpdatePasswordEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 final class ForgotPasswordEventSubscriber implements EventSubscriberInterface
 {
@@ -35,7 +38,7 @@ final class ForgotPasswordEventSubscriber implements EventSubscriberInterface
         // User should not be authenticated on forgot password
         $token = $this->tokenStorage->getToken();
         if (null !== $token && $token->getUser() instanceof UserInterface) {
-            throw new AccessDeniedHttpException;
+            throw new AccessDeniedHttpException();
         }
     }
 

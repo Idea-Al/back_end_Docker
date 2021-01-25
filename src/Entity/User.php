@@ -444,9 +444,7 @@ class User implements UserInterface
 
         return $this;
     }
-
-
-
+    
     public function getDescription(): ?UserDescription
     {
         return $this->description;
