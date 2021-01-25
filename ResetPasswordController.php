@@ -22,11 +22,11 @@ use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
  */
 class ResetPasswordController extends ApiController
 {
-    use ResetPasswordControllerTrait;
+   # use ResetPasswordControllerTrait;
 
     private $resetPasswordHelper;
 
-    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper)
+    public function __construct()#ResetPasswordHelperInterface $resetPasswordHelper)
     {
         $this->resetPasswordHelper = $resetPasswordHelper;
     }
