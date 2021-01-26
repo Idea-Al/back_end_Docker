@@ -41,12 +41,9 @@ final class ForgotPasswordEventSubscriber implements EventSubscriberInterface
         $email = $user->getEmail();
         $resetToken = $passwordToken->getToken();
         $username = $user->getUsername();
-        $mailerService->sendToken($resetToken, $email, $username, null, 'résiliation de votre mot de passe', 'reset_password/email.html.twig');
-        dd('coucou');
+        $mailerService->sendToken($resetToken, $email, $username, null, 'Alors, on oubli son mot de passe?', 'reset_password/email.html.twig');
        
         //    throw new \RuntimeException('Unable to send email');
         
     }
-
-
 }

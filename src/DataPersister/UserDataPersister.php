@@ -51,16 +51,16 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
         $this->_entityManager->persist($data);
         $this->_entityManager->flush();
 
-
         $to = $data->getEmail();
-        $username = $data->getUsername();
+        $info = ['email' => $data->getUsername(), 'username' => $data->getPseudo()]; //
         $tokenLifeTime = $this->resetPasswordHelper->getTokenLifetime();
 
-        $this->mailerService->sendToken($confirmationToken, $to, $username, $tokenLifeTime, 'Confirmation ', 'registration/confirmation_email.html.twig');
+
+        $this->mailerService->sendToken($confirmationToken, $to, $info, $tokenLifeTime, 'Confirmation de votre inscription', 'registration/confirmation_email.html.twig');
 
         
 
-        return new JsonResponse("coucou", 201);
+        return new JsonResponse(["data"=>"Votre inscription a été validée, vous allez recevoir un email de confirmation pour activer votre compte et pouvoir vous connecter"], 201);
         //return $this->respondWithSuccess(sprintf('Votre inscription a été validée, vous aller recevoir un email de confirmation pour activer votre compte et pouvoir vous connecter', $data->getPseudo()));
     }
 

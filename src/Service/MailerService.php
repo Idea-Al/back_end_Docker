@@ -39,7 +39,7 @@ class MailerService extends AbstractController
         ->htmlTemplate($template)
         ->context([
             'Token' => $token,
-            'username' => $username,
+            'info' => $username,
             'tokenLifetime' => $tokenLifeTime,
         ]);
 

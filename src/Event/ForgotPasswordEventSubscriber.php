@@ -52,6 +52,7 @@ final class ForgotPasswordEventSubscriber implements EventSubscriberInterface
 
     public function onUpdatePassword(UpdatePasswordEvent $event)
     {
+        //dd($event);
         $passwordToken = $event->getPasswordToken();
         $user = $passwordToken->getUser();
         $user->setPassword($this->_passwordEncoder->encodePassword($user, $event->getPassword()));

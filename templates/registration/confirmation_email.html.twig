@@ -1,10 +1,10 @@
-<h1>Hi!</h1>
+<h1>Bonjour {{ info.username }} et bienvenue chez Idéal !</h1>
 
 <p>
-   To confirm your account
-    <a href="{{ url('confirm_account', {token: Token.confirmationToken , username: username})}}">here</a>
-    This link will expire in {{ tokenLifetime|date('g') }} hour(s)..
+   Veuillez cliquez sur le lien 
+    <a href={{ url('confirm_account', {token: Token.confirmationToken , username: info.email})}}>ici</a> pour confirmer votre compte.
+    Ce lien expirera dans {{ tokenLifetime|date('g') }} heure.
 </p>
 <p>
-    Cheers!
+    Cheers !
 </p>

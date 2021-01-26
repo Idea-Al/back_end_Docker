@@ -13,3 +13,6 @@ gesdinet_jwt_refresh_token:
   path:       /token/refresh
   controller: gesdinet.jwtrefreshtoken::refresh
 
+confirm_account:
+  path: /account/confirm/{token}/{username}
+
