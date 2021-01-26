@@ -108,8 +108,7 @@ class User implements UserInterface
     private $created_at ;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Groups("user:read")
+     * @ORM\Column(type="datetime", nullable=true))
      */
     private $updated_at;
 
@@ -121,38 +120,44 @@ class User implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity=Job::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups("user:read")
      */
     private $job;
 
     /**
      * @ORM\OneToOne(targetEntity=UserDescription::class, mappedBy="user", orphanRemoval=true)
-     *
+     * @Groups({"user:read", "user:write"})
      */
     private $description;
 
     /**
      * @ORM\OneToMany(targetEntity=ProjectFav::class, mappedBy="user",  orphanRemoval=true)
+     * @Groups({"user:read", "user:write"})
      */
     private $favorite_projects;
 
     /**
      * @ORM\OneToMany(targetEntity=Learning::class, mappedBy="user", orphanRemoval=true)
+     *  @Groups({"user:read", "user:write"})
      */
     private $learnings;
 
     /**
      * @ORM\OneToMany(targetEntity=UserFriend::class, mappedBy="user")
+     *  @Groups({"user:read", "user:write"})
      */
     private $friends;
 
     /**
      * @ORM\OneToMany(targetEntity=UserFriend::class, mappedBy="friend")
+     * @Groups({"user:read", "user:write"})
      */
     private $friendWithMe;
 
 
     /**
      * @ORM\OneToMany(targetEntity=UserReport::class, mappedBy="reporter", orphanRemoval=true)
+     * 
      */
     private $reportedUsers;
 
@@ -188,6 +193,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Rhythm::class)
+     * @Groups({"user:read", "user:write"})
      */
     private $rhythm;
 
@@ -198,6 +204,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Realization::class, mappedBy="user",cascade={"persist"})
+     * @Groups({"user:read", "user:write"})
      */
     private $realizations;
 
@@ -444,9 +451,7 @@ class User implements UserInterface
 
         return $this;
     }
-
-
-
+    
     public function getDescription(): ?UserDescription
     {
         return $this->description;

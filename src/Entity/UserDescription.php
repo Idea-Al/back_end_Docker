@@ -5,10 +5,17 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\UserDescriptionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 /**
  * @ORM\Entity(repositoryClass=UserDescriptionRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"description:read"}},
+ *     denormalizationContext={"groups"={"description:write"}},
+ *     iri="http://schema.org/User"
+ * )
+ * )
  */
 class UserDescription
 {
@@ -21,16 +28,19 @@ class UserDescription
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user:read", "user:write"})
      */
     private $journey;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"user:read", "user:write"})
      */
     private $purpose;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups({"user:read", "user:write","description:read" })
      */
     private $aboutMe;
 

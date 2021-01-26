@@ -29,7 +29,6 @@ class RegistrationController extends AbstractController
     public function confirmAccount($token, $username): Response
     {
 
-
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository(User::class)->findOneBy(['email' => $username]);
         $tokenExist = $user->getConfirmationToken();
@@ -40,13 +39,13 @@ class RegistrationController extends AbstractController
             $em->flush();
 
             // TODO: Change Url
-            return $this->redirect('https://localhost:443');
+            return $this->redirect('https://localhost:53000');
             //return $this->redirectToRoute('app_login');
         } else {
             return $this->render('registration/token-expire.html.twig');
         }
     }
-
+    //
     /**
      * @param UserInterface $user
      * @param JWTTokenManagerInterface $JWTManager
@@ -54,7 +53,7 @@ class RegistrationController extends AbstractController
      */
     public function getTokenUser(UserInterface $user, JWTTokenManagerInterface $JWTManager)
     {
-        //dd("coucou");
+
         return new JsonResponse(['token' => $JWTManager->create($user)]);
     }
 
