@@ -7,10 +7,12 @@ use App\Repository\LogbookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=LogbookRepository::class)
- * @ApiResource()
+ * @ApiResource(normalizationContext={"groups"={"logbook:read"}},
+ *     iri="http://schema.org/Logbook")
  */
 class Logbook
 {
@@ -23,26 +25,31 @@ class Logbook
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"project:read", "logbook:read"})
      */
     private $task;
 
     /**
      * @ORM\ManyToOne(targetEntity=Project::class, inversedBy="logbooks")
+     * @Groups("logbook:read")
      */
     private $project;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="logbooks")
+     * @Groups("logbook:read")
      */
     private $user;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("logbook:read")
      */
     private $created_at;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups("logbook:read")
      */
     private $updated_at;
 

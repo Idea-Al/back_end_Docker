@@ -45,6 +45,7 @@ class RegistrationController extends AbstractController
             return $this->render('registration/token-expire.html.twig');
         }
     }
+
     //
     /**
      * @param UserInterface $user

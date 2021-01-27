@@ -7,6 +7,7 @@ use App\Repository\RealizationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=RealizationRepository::class)
@@ -18,46 +19,55 @@ class Realization
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("realization:read")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("realization:read")
      */
     private $name;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups("realization:read")
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("realization:read")
      */
     private $screen;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("realization:read")
      */
     private $screen2;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("realization:read")
      */
     private $repoLink;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("realization:read")
      */
     private $websiteLink;
 
     /**
      * @ORM\ManyToMany(targetEntity=Techno::class, inversedBy="realizations")
+     * @Groups("realization:read")
      */
     private $technos;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="realizations")
+     * @Groups("realization:read")
      */
     private $user;
 

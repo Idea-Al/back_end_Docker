@@ -7,10 +7,12 @@ use App\Repository\JobRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=JobRepository::class)
- * @ApiResource()
+ * @ApiResource(normalizationContext={"groups"={"job:read"}},
+ *     iri="http://schema.org/Job")
  */
 class Job
 {
@@ -18,21 +20,25 @@ class Job
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("job:read")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user:read", "project:read", "job:read"}) 
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="job")
+     * @Groups("job:read")
      */
     private $users;
 
     /**
      * @ORM\ManyToMany(targetEntity=Project::class, mappedBy="jobs")
+     * @Groups("job:read")
      */
     private $projects;
 

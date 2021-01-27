@@ -37,7 +37,7 @@ class Level
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"level:read", "level:write"})
+     * @Groups({"level:read", "level:write", "user:read"})
      */
     private $name;
 

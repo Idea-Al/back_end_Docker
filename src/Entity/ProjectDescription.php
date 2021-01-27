@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ProjectDescriptionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ProjectDescriptionRepository::class)
@@ -21,16 +22,19 @@ class ProjectDescription
 
     /**
      * @ORM\Column(type="text")
+     * @Groups("project:read")
      */
     private $purpose;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups("project:read")
      */
     private $target;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups("project:read")
      */
     private $learningSkill;
 

@@ -7,10 +7,14 @@ use App\Repository\TechnoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 /**
  * @ORM\Entity(repositoryClass=TechnoRepository::class)
- * @ApiResource()
+ * @ApiResource(normalizationContext={"groups"={"techno:read"}},
+ *     denormalizationContext={"groups"={"techno:write"}},
+ *     iri="http://schema.org/Techno")
  */
 class Techno
 {
@@ -18,21 +22,25 @@ class Techno
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("techno:read")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"project:read", "realization:read", "techno:read", "user:read"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"project:read", "realization:read", "techno:read"})
      */
     private $logo;
 
     /**
      * @ORM\ManyToMany(targetEntity=Project::class, mappedBy="technos")
+     * @Groups("techno:read")
      */
     private $projects;
 
@@ -43,7 +51,7 @@ class Techno
 
     /**
      * @ORM\OneToMany(targetEntity=Learning::class, mappedBy="techno", orphanRemoval=true, cascade={"persist"})
-     * 
+     * @Groups("techno:read")
      */
     private $learnings;
 

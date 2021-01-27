@@ -7,10 +7,18 @@ use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=ProjectRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"project:read"}},
+ *     denormalizationContext={"groups"={"project:write"}},
+ *     iri="http://schema.org/Project"
+ * )
  */
 class Project
 {
@@ -18,42 +26,50 @@ class Project
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"project:read", "techno:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"project:read", "techno:read", "logbook:read"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups("project:read")
      */
     private $resume;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups("project:read")
      */
     private $max_participant;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("project:read")
      */
     private $is_moderated;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("project:read")
      */
     private $picture;
 
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("project:read")
      */
     private $link;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("project:read")
      */
     private $created_at;
 
@@ -64,21 +80,25 @@ class Project
 
     /**
      * @ORM\ManyToMany(targetEntity=Techno::class, inversedBy="projects")
+     * @Groups("project:read")
      */
     private $technos;
 
     /**
      * @ORM\OneToMany(targetEntity=ProjectFav::class, mappedBy="project",  orphanRemoval=true)
+     * @Groups("project:read")
      */
     private $favorites;
     
     /**
      * @ORM\OneToOne(targetEntity=ProjectDescription::class, mappedBy="project", cascade={"persist", "remove"})
+     * @Groups("project:read")
      */
     private $projectDescription;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("project:read")
      */
     private $is_completed;
 
@@ -89,6 +109,7 @@ class Project
 
     /**
      * @ORM\ManyToMany(targetEntity=Job::class, inversedBy="projects")
+     * @Groups("project:read")
      */
     private $jobs;
 
@@ -99,6 +120,7 @@ class Project
 
     /**
      * @ORM\OneToMany(targetEntity=Logbook::class, mappedBy="project")
+     * @Groups("project:read")
      */
     private $logbooks;
 

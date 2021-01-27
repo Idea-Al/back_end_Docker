@@ -39,8 +39,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:read", "user:write"})
-     * @ApiProperty(iri="http://schema.org/pseudo")
+     * @Groups({"user:read", "user:write", "realization:read", "logbook:read"})
      */
     private $pseudo;
 
@@ -58,8 +57,6 @@ class User implements UserInterface
      * 
      */
     private $password;
-
-
      
     /**
      * @Groups("user:write")
@@ -126,7 +123,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToOne(targetEntity=UserDescription::class, mappedBy="user", orphanRemoval=true)
-     * @Groups({"user:read", "user:write"})
+     * @Groups({"user:read",  "user:write"})
      */
     private $description;
 
