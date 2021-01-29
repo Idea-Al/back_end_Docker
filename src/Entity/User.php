@@ -210,6 +210,11 @@ class User implements UserInterface
      */
     private $confirmationToken;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="creator", orphanRemoval=true)
+     */
+    private $projects;
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
@@ -226,6 +231,7 @@ class User implements UserInterface
         $this->send_fav = new ArrayCollection();
         $this->receive_fav = new ArrayCollection();
         $this->realizations = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     /**
@@ -830,6 +836,36 @@ class User implements UserInterface
     public function setConfirmationToken(?string $confirmationToken): self
     {
         $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): self
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getCreator() === $this) {
+                $project->setCreator(null);
+            }
+        }
 
         return $this;
     }

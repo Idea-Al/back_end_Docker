@@ -17,26 +17,27 @@ class ProjectDescription
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"project:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups("project:read")
+     * @Groups({"project:read","project:write"})
      */
-    private $purpose;
+    private $purpose; 
 
     /**
      * @ORM\Column(type="text")
-     * @Groups("project:read")
+     * @Groups({"project:read","project:write"})
      */
     private $target;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups("project:read")
+     * @Groups({"project:read", "project:write"})
      */
-    private $learningSkill;
+    private $learningSkill; 
 
     /**
      * @ORM\OneToOne(targetEntity=Project::class, inversedBy="projectDescription")

@@ -7,6 +7,7 @@ use App\Entity\Job;
 use App\Entity\Learning;
 use App\Entity\Logbook;
 use App\Entity\Message;
+use App\Entity\Project;
 use App\Entity\ProjectFav;
 use App\Entity\Realization;
 use App\Entity\Rhythm;
@@ -33,7 +34,7 @@ public function testGetEmail(){
     $response = $this->user->setEmail($value);
     
     self::assertInstanceOf(User::class, $response);
-    self::assertEquals($value, $this->user->getEmail());
+    self::assertEquals($value, filter_var($this->user->getEmail(), FILTER_VALIDATE_EMAIL));
     self::assertEquals($value, $this->user->getUsername());
 }
 
@@ -42,7 +43,10 @@ public function testGetEmail(){
         $response = $this->user->setPseudo($value);
         
         self::assertInstanceOf(User::class, $response);
+         //Regex that check if there is letter, number and those two special caracters: - and _
+        self::assertRegExp("/^[-_.0-9A-Za-z]+$/", $this->user->getPseudo());
         self::assertEquals($value, $this->user->getPseudo());
+        
     }
 
     public function testGetPassword(){
@@ -152,7 +156,7 @@ public function testGetEmail(){
         self::assertEquals($value, $this->user->getDescription());
     }
 
-    public function testFavoriteProjects(){
+    public function testGetFavoriteProjects(){
 
         for($i = 1; $i <= 3; $i++ )
         {
@@ -324,6 +328,21 @@ public function testGetEmail(){
         self::assertEquals($value, $this->user->getConfirmationToken());
     }
 
+    public function testGetProjects(){
+
+        for($i = 1; $i <= 3; $i++ )
+        {
+            $values[] = new Project;
+        }        
+     
+
+        foreach($values as $value){
+        $response = $this->user->addProject($value);
+    }
+        
+        self::assertInstanceOf(User::class, $response);
+        self::assertCount(3, $this->user->getProjects());
+    }
 
 
 }

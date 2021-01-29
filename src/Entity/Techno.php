@@ -22,7 +22,7 @@ class Techno
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("techno:read")
+     * @Groups({"techno:read", "project:write"})
      */
     private $id;
 

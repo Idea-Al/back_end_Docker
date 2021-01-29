@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -32,21 +33,21 @@ class Project
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"project:read", "techno:read", "logbook:read"})
+     * @Groups({"project:read", "techno:read", "logbook:read", "project:write"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups("project:read")
+     * @Groups({"project:read", "project:write"})
      */
     private $resume;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups("project:read")
+     * @Groups({"project:read", "project:write"})
      */
-    private $max_participant;
+    private $maxParticipant;
 
     /**
      * @ORM\Column(type="boolean")
@@ -56,14 +57,14 @@ class Project
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("project:read")
+     * @Groups({"project:read","project:write"})
      */
     private $picture;
 
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups("project:read")
+     * @Groups({"project:read","project:write"})
      */
     private $link;
 
@@ -74,42 +75,44 @@ class Project
     private $created_at;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime",nullable=true)
      */
     private $updated_at;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Techno::class, inversedBy="projects")
-     * @Groups("project:read")
+     * @ORM\ManyToMany(targetEntity=Techno::class, inversedBy="projects",cascade={"persist"})
+     * @Groups({"project:read","project:write"})
      */
     private $technos;
 
     /**
      * @ORM\OneToMany(targetEntity=ProjectFav::class, mappedBy="project",  orphanRemoval=true)
-     * @Groups("project:read")
+     * @Groups({"project:read"})
      */
     private $favorites;
     
     /**
      * @ORM\OneToOne(targetEntity=ProjectDescription::class, mappedBy="project", cascade={"persist", "remove"})
-     * @Groups("project:read")
+     * @Groups({"project:read","project:write"})
      */
     private $projectDescription;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups("project:read")
+     * @Groups({"project:read"})
      */
     private $is_completed;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"project:read", "project:write"})
      */
     private $slug;
 
     /**
      * @ORM\ManyToMany(targetEntity=Job::class, inversedBy="projects")
-     * @Groups("project:read")
+     * @Groups({"project:read", "project:write"})
+     * @ApiProperty(iri="http://schema.org/Jobs")
      */
     private $jobs;
 
@@ -124,6 +127,22 @@ class Project
      */
     private $logbooks;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="projects")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $creator;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $hasOwner;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isFull;
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
@@ -133,6 +152,9 @@ class Project
         $this->jobs = new ArrayCollection();
         $this->messages = new ArrayCollection();
         $this->logbooks = new ArrayCollection();
+        $this->is_completed = false;
+        $this->is_moderated = false;
+        
     }
 
     public function getId(): ?int
@@ -142,11 +164,13 @@ class Project
 
     public function getName(): ?string
     {
+        
         return $this->name;
     }
 
     public function setName(string $name): self
     {
+
         $this->name = $name;
 
         return $this;
@@ -166,12 +190,14 @@ class Project
 
     public function getMaxParticipant(): ?int
     {
-        return $this->max_participant;
+        return $this->maxParticipant;
     }
 
-    public function setMaxParticipant(int $max_participant): self
+
+    public function setMaxParticipant(int $maxParticipant): self
     {
-        $this->max_participant = $max_participant;
+
+        $this->maxParticipant = $maxParticipant;
 
         return $this;
     }
@@ -418,6 +444,39 @@ class Project
         return $this;
     }
 
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
 
+    public function setCreator(?User $creator): self
+    {
+        $this->creator = $creator;
 
+        return $this;
+    }
+
+    public function getHasOwner(): ?bool
+    {
+        return $this->hasOwner;
+    }
+
+    public function setHasOwner(bool $hasOwner): self
+    {
+        $this->hasOwner = $hasOwner;
+
+        return $this;
+    }
+
+    public function getIsFull(): ?bool
+    {
+        return $this->isFull;
+    }
+
+    public function setIsFull(bool $isFull): self
+    {
+        $this->isFull = $isFull;
+
+        return $this;
+    } 
 }

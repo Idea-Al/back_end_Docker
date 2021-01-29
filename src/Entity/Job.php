@@ -20,7 +20,7 @@ class Job
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("job:read")
+     * @Groups({"job:read","project:write"})
      */
     private $id;
 
