@@ -33,7 +33,7 @@ class ProjectTest extends TestCase{
     }
     
     public function testGetResume(){
-        $value = 'Insulte';
+        $value = 'Un projet qui révolutionnera le monde ! Enfin... Je crois';
         $response = $this->project->setResume($value);
         
         self::assertInstanceOf(Project::class, $response);
@@ -41,7 +41,7 @@ class ProjectTest extends TestCase{
     }
 
     public function testGetMaxParticipant(){
-        $value = 1;
+        $value = 4;
         $response = $this->project->setMaxParticipant($value);
         
         self::assertInstanceOf(Project::class, $response);
@@ -57,7 +57,7 @@ class ProjectTest extends TestCase{
     }
 
     public function testGetPicture(){
-        $value = 1;
+        $value = 'fdfddfdg.jpg';
         $response = $this->project->setPicture($value);
         
         self::assertInstanceOf(Project::class, $response);
@@ -65,7 +65,7 @@ class ProjectTest extends TestCase{
     }
 
     public function testGetLink(){
-        $value = 1;
+        $value = 'fdfdlkfjsdfds.com';
         $response = $this->project->setLink($value);
         
         self::assertInstanceOf(Project::class, $response);
@@ -96,28 +96,50 @@ class ProjectTest extends TestCase{
     }
 
     public function testGetTechno(){
-        for($i = 1; $i <= 6; $i++){
-        $values[] = new Techno;
-    }
-        foreach($values as $value){
-            $response = $this->project->addTechno($value);
-    }
+        $value = new Techno;
+        $value1 = new Techno;
+        $value2 = new Techno;
+
+        $this->project->addTechno($value);
+        $this->project->addTechno($value1);
+        $this->project->addTechno($value2);
+
+        self::assertCount(3, $this->project->getTechnos());
+        self::assertTrue($this->project->getTechnos()->contains($value));
+        self::assertTrue($this->project->getTechnos()->contains($value1));
+        self::assertTrue($this->project->getTechnos()->contains($value2));
+
+        $response = $this->project->removeTechno($value1);
+
         self::assertInstanceOf(Project::class, $response);
-        self::assertCount(6, $this->project->getTechnos());
+        self::assertCount(2, $this->project->getTechnos());
+        self::assertTrue($this->project->getTechnos()->contains($value));
+        self::assertFalse($this->project->getTechnos()->contains($value1));
+        self::assertTrue($this->project->getTechnos()->contains($value2));
     }
 
-    public function testGetProjectFavorite(){
+    public function testGetFavorites(){
 
-        for($i = 1; $i <= 3; $i++){
-            $values[] = new ProjectFav;
-        }
-        foreach($values as $value){
-            $response = $this->project->addFavorite($value);
-        
-        }
-        
-        self::assertInstanceOf(Project::class, $response);
+        $value = new ProjectFav;
+        $value1 = new ProjectFav;
+        $value2 = new ProjectFav;
+
+        $this->project->addFavorite($value);
+        $this->project->addFavorite($value1);
+        $this->project->addFavorite($value2);
+
         self::assertCount(3, $this->project->getFavorites());
+        self::assertTrue($this->project->getFavorites()->contains($value));
+        self::assertTrue($this->project->getFavorites()->contains($value1));
+        self::assertTrue($this->project->getFavorites()->contains($value2));
+
+        $response = $this->project->removeFavorite($value1);
+
+        self::assertInstanceOf(Project::class, $response);
+        self::assertCount(2, $this->project->getFavorites());
+        self::assertTrue($this->project->getFavorites()->contains($value));
+        self::assertFalse($this->project->getFavorites()->contains($value1));
+        self::assertTrue($this->project->getFavorites()->contains($value2));
     }
 
     public function testGetProjectDescription(){
@@ -128,7 +150,7 @@ class ProjectTest extends TestCase{
     
         
         self::assertInstanceOf(Project::class, $response);
-        self::assertEquals($value, $this->project->getProjectDescription());
+        self::assertInstanceOf(ProjectDescription::class, $this->project->getProjectDescription());
     }
 
     public function testGetIsCompleted(){
@@ -139,46 +161,84 @@ class ProjectTest extends TestCase{
         self::assertIsBool($value, $this->project->getIsCompleted());
     }
 
-    public function testGetJob(){
-
-        for($i = 1; $i <= 3; $i++){
-            $values[] = new Job;
-        }
-        foreach($values as $value){
-            $response = $this->project->addJob($value);
-        
-        }
+    public function testGetSlug(){
+        $value = 'Voici le slug pour le lien';
+        $response = $this->project->setSlug($value);
         
         self::assertInstanceOf(Project::class, $response);
+        self::assertEquals($value, $this->project->getSlug());
+    }
+
+    public function testGetJob(){
+        $value = new Job;
+        $value1 = new Job;
+        $value2 = new Job;
+
+        $this->project->addJob($value);
+        $this->project->addJob($value1);
+        $this->project->addJob($value2);
+
         self::assertCount(3, $this->project->getJobs());
+        self::assertTrue($this->project->getJobs()->contains($value));
+        self::assertTrue($this->project->getJobs()->contains($value1));
+        self::assertTrue($this->project->getJobs()->contains($value2));
+
+        $response = $this->project->removeJob($value1);
+
+        self::assertInstanceOf(Project::class, $response);
+        self::assertCount(2, $this->project->getJobs());
+        self::assertTrue($this->project->getJobs()->contains($value));
+        self::assertFalse($this->project->getJobs()->contains($value1));
+        self::assertTrue($this->project->getJobs()->contains($value2));
     }
 
     public function testGetMessage(){
 
-        for($i = 1; $i <= 3; $i++){
-            $values[] = new Message;
-        }
-        foreach($values as $value){
-            $response = $this->project->addMessage($value);
-        
-        }
-        
-        self::assertInstanceOf(Project::class, $response);
+        $value = new Message;
+        $value1 = new Message;
+        $value2 = new Message;
+
+        $this->project->addMessage($value);
+        $this->project->addMessage($value1);
+        $this->project->addMessage($value2);
+
         self::assertCount(3, $this->project->getMessages());
+        self::assertTrue($this->project->getMessages()->contains($value));
+        self::assertTrue($this->project->getMessages()->contains($value1));
+        self::assertTrue($this->project->getMessages()->contains($value2));
+
+        $response = $this->project->removeMessage($value1);
+
+        self::assertInstanceOf(Project::class, $response);
+        self::assertCount(2, $this->project->getMessages());
+        self::assertTrue($this->project->getMessages()->contains($value));
+        self::assertFalse($this->project->getMessages()->contains($value1));
+        self::assertTrue($this->project->getMessages()->contains($value2));
+        
     }
 
     public function testGetLogbook(){
 
-        for($i = 1; $i <= 3; $i++){
-            $values[] = new Logbook;
-        }
-        foreach($values as $value){
-            $response = $this->project->addLogbook($value);
-        
-        }
-        
-        self::assertInstanceOf(Project::class, $response);
+        $value = new Logbook;
+        $value1 = new Logbook;
+        $value2 = new Logbook;
+
+        $this->project->addLogbook($value);
+        $this->project->addLogbook($value1);
+        $this->project->addLogbook($value2);
+
         self::assertCount(3, $this->project->getLogbooks());
+        self::assertTrue($this->project->getLogbooks()->contains($value));
+        self::assertTrue($this->project->getLogbooks()->contains($value1));
+        self::assertTrue($this->project->getLogbooks()->contains($value2));
+
+        $response = $this->project->removeLogbook($value1);
+
+        self::assertInstanceOf(Project::class, $response);
+        self::assertCount(2, $this->project->getLogbooks());
+        self::assertTrue($this->project->getLogbooks()->contains($value));
+        self::assertFalse($this->project->getLogbooks()->contains($value1));
+        self::assertTrue($this->project->getLogbooks()->contains($value2));
     }
 
     public function testGetCreator(){
@@ -188,7 +248,7 @@ class ProjectTest extends TestCase{
         $response = $this->project->setCreator($value);
 
         self::assertInstanceOf(Project::class, $response);
-        self::assertEquals($value, $this->project->getCreator());
+        self::assertInstanceOf(User::class, $this->project->getCreator());
     }
 
     public function testGetHasOwner(){

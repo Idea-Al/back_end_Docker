@@ -36,50 +36,76 @@ class TechnoTest extends TestCase{
 
 
     public function testGetProjects(){
+        $value = new Project;
+        $value1 = new Project;
+        $value2 = new Project;
 
-        for($i = 1; $i <= 3; $i++ )
-        {
-            $values[] = new Project;
-        }        
-     
+        $this->techno->addProject($value);
+        $this->techno->addProject($value1);
+        $this->techno->addProject($value2);
 
-        foreach($values as $value){
-        $response = $this->techno->addProject($value);
-    }
-        
-        self::assertInstanceOf(Techno::class, $response);
         self::assertCount(3, $this->techno->getProjects());
+        self::assertTrue($this->techno->getProjects()->contains($value));
+        self::assertTrue($this->techno->getProjects()->contains($value1));
+        self::assertTrue($this->techno->getProjects()->contains($value2));
+
+        $response = $this->techno->removeProject($value);
+        $response = $this->techno->removeProject($value1);
+
+        self::assertInstanceOf(Techno::class, $response);
+        self::assertCount(1, $this->techno->getProjects());
+        self::assertFalse($this->techno->getProjects()->contains($value));
+        self::assertFalse($this->techno->getProjects()->contains($value1));
+        self::assertTrue($this->techno->getProjects()->contains($value2));
     }
 
     public function testGetRealizations(){
 
-        for($i = 1; $i <= 3; $i++ )
-        {
-            $values[] = new Realization;
-        }        
+        $value = new Realization;
+        $value1 = new Realization;
+        $value2 = new Realization;
 
-        foreach($values as $value){
-        $response = $this->techno->addRealization($value);
-    }
-        
-        self::assertInstanceOf(Techno::class, $response);
+        $this->techno->addRealization($value);
+        $this->techno->addRealization($value1);
+        $this->techno->addRealization($value2);
+
         self::assertCount(3, $this->techno->getRealizations());
+        self::assertTrue($this->techno->getRealizations()->contains($value));
+        self::assertTrue($this->techno->getRealizations()->contains($value1));
+        self::assertTrue($this->techno->getRealizations()->contains($value2));
+
+        $response = $this->techno->removeRealization($value);
+        $response = $this->techno->removeRealization($value1);
+
+        self::assertInstanceOf(Techno::class, $response);
+        self::assertCount(1, $this->techno->getRealizations());
+        self::assertFalse($this->techno->getRealizations()->contains($value));
+        self::assertFalse($this->techno->getRealizations()->contains($value1));
+        self::assertTrue($this->techno->getRealizations()->contains($value2));
     }
 
     public function testGetLearnings(){
 
-        for($i = 1; $i <= 3; $i++ )
-        {
-            $values[] = new Learning;
-        }        
-     
+        $value = new Learning;
+        $value1 = new Learning;
+        $value2 = new Learning;
 
-        foreach($values as $value){
-        $response = $this->techno->addLearning($value);
-    }
-        
-        self::assertInstanceOf(Techno::class, $response);
+        $this->techno->addLearning($value);
+        $this->techno->addLearning($value1);
+        $this->techno->addLearning($value2);
+
         self::assertCount(3, $this->techno->getLearnings());
-    }
+        self::assertTrue($this->techno->getLearnings()->contains($value));
+        self::assertTrue($this->techno->getLearnings()->contains($value1));
+        self::assertTrue($this->techno->getLearnings()->contains($value2));
 
+        $response = $this->techno->removeLearning($value);
+        $response = $this->techno->removeLearning($value1);
+
+        self::assertInstanceOf(Techno::class, $response);
+        self::assertCount(1, $this->techno->getLearnings());
+        self::assertFalse($this->techno->getLearnings()->contains($value));
+        self::assertFalse($this->techno->getLearnings()->contains($value1));
+        self::assertTrue($this->techno->getLearnings()->contains($value2));
+    }
 }

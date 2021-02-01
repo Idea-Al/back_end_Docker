@@ -21,31 +21,50 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     iri="http://schema.org/Project"
  * )
  */
+
 class Project
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"project:read", "techno:read"})
+     * @Groups({"project:read", "techno:read","projectDescription:read", "projectDescription:write"})
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255) 
      * @Groups({"project:read", "techno:read", "logbook:read", "project:write"})
+     * @Assert\NotBlank(message="Alors, il n'a pas de nom ton projet?")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Un peu plus d'inspiration s'il te plait car moins de {{ limit }} caractères ce n'est pas assez mon ami",
+     *      maxMessage = "Oulaah {{ limit }} caractères pour le nom du projet? Tu veux pas lui donner un surnom plutôt? "
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
      * @Groups({"project:read", "project:write"})
+     * @Assert\NotBlank(message="Alors, il n'a pas de nom ton projet?")
+     * @Assert\Length(
+     *      min = 50,
+     *      max = 500,
+     *      minMessage = "Moins de {{ limit }} caractères? C'est un résumé d'un résumé la... ",
+     *      maxMessage = "{{ limit }} caractères?? Pas la peine de nous écrire un roman non plus... "
+     * )
      */
     private $resume;
 
     /**
      * @ORM\Column(type="integer")
      * @Groups({"project:read", "project:write"})
+     *  @Assert\Range(
+     *      min = 2,
+     *      max = 4
+     * )
      */
     private $maxParticipant;
 
@@ -58,6 +77,7 @@ class Project
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"project:read","project:write"})
+     * 
      */
     private $picture;
 
@@ -130,18 +150,23 @@ class Project
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="projects")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"project:read", "project:write"})
      */
     private $creator;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $hasOwner;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"project:read"})
      */
     private $isFull;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"project:read", "project:write"})
+     */
+    private $hasOwner;
+
 
     public function __construct()
     {
@@ -154,6 +179,7 @@ class Project
         $this->logbooks = new ArrayCollection();
         $this->is_completed = false;
         $this->is_moderated = false;
+        $this->isFull = false;
         
     }
 
@@ -456,17 +482,6 @@ class Project
         return $this;
     }
 
-    public function getHasOwner(): ?bool
-    {
-        return $this->hasOwner;
-    }
-
-    public function setHasOwner(bool $hasOwner): self
-    {
-        $this->hasOwner = $hasOwner;
-
-        return $this;
-    }
 
     public function getIsFull(): ?bool
     {
@@ -478,5 +493,17 @@ class Project
         $this->isFull = $isFull;
 
         return $this;
-    } 
+    }
+
+    public function getHasOwner(): ?bool
+    {
+        return $this->hasOwner;
+    }
+
+    public function setHasOwner(bool $hasOwner): self
+    {
+        $this->hasOwner = $hasOwner;
+
+        return $this;
+    }
 }

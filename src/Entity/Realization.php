@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=RealizationRepository::class)
@@ -26,18 +28,32 @@ class Realization
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("realization:read")
+     * @Assert\NotBlank
+     * @Assert\Regex(
+     *     pattern="/\d/",
+     *     match=false,
+     *     message="Un motif ne peut pas contenir de nombre"
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      * @Groups("realization:read")
+     *    * @Assert\NotBlank(message="Il y a bien quelque chose que tu veux nous dire à propos de ce projet")
+     * @Assert\Length(
+     *      min = 30,
+     *      max = 1000,
+     *      minMessage = "Allez, un petit effort ! Il te faut au moins {{ limit }} caractères",
+     *      maxMessage = "Il te faut vraiment plus de {{ limit }} caractères?? Va à l'essentiel."
+     * )
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("realization:read")
+     * @Assert\NotBlank(message="T'as bien une image du projet, non?")
      */
     private $screen;
 

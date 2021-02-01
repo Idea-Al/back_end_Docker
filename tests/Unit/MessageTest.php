@@ -22,7 +22,7 @@ class MessageTest extends TestCase{
         $response = $this->message->setSender($value);
         
         self::assertInstanceOf(Message::class, $response);
-        self::assertEquals($value, $this->message->getSender());
+        self::assertInstanceOf(User::class, $this->message->getSender());
     }
 
     
@@ -31,7 +31,7 @@ class MessageTest extends TestCase{
         $response = $this->message->setReceiver($value);
         
         self::assertInstanceOf(Message::class, $response);
-        self::assertEquals($value, $this->message->getReceiver());
+        self::assertInstanceOf(User::class, $this->message->getReceiver());
     }
 
     public function testGetText(){
@@ -47,7 +47,6 @@ class MessageTest extends TestCase{
         $response = $this->message->setProject($value);
         
         self::assertInstanceOf(Message::class, $response);
-        self::assertEquals($value, $this->message->getProject());
+        self::assertInstanceOf(Project::class, $this->message->getProject());
     }
-
 }

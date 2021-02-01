@@ -21,7 +21,7 @@ class UserFriendTest extends TestCase{
         $response = $this->userFriend->setUser($value);
 
         self::assertInstanceOf(UserFriend::class, $response);
-        self::assertEquals($value, $this->userFriend->getUser());
+        self::assertInstanceOf(User::class, $this->userFriend->getUser());
         
     }
 
@@ -30,7 +30,7 @@ class UserFriendTest extends TestCase{
         $response = $this->userFriend->setFriend($value);
 
         self::assertInstanceOf(UserFriend::class, $response);
-        self::assertEquals($value, $this->userFriend->getFriend());
+        self::assertInstanceOf(User::class, $this->userFriend->getFriend());
         
     }
 

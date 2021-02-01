@@ -22,7 +22,7 @@ class LearningTest extends TestCase{
         $response = $this->learning->setUser($value);
         
         self::assertInstanceOf(Learning::class, $response);
-        self::assertEquals($value, $this->learning->getUser());
+        self::assertInstanceOf(User::class, $this->learning->getUser());
     }
 
     public function testGetTechno(){
@@ -30,7 +30,7 @@ class LearningTest extends TestCase{
         $response = $this->learning->setTechno($value);
         
         self::assertInstanceOf(Learning::class, $response);
-        self::assertEquals($value, $this->learning->getTechno());
+        self::assertInstanceOf(Techno::class, $this->learning->getTechno());
     }
 
     public function testGetLevel(){
@@ -38,6 +38,6 @@ class LearningTest extends TestCase{
         $response = $this->learning->setLevel($value);
         
         self::assertInstanceOf(Learning::class, $response);
-        self::assertEquals($value, $this->learning->getLevel());
+        self::assertInstanceOf(Level::class, $this->learning->getLevel());
     }
 }

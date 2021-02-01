@@ -33,13 +33,25 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("user:read")
+     * @Groups({"user:read", "project:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:read", "user:write", "realization:read", "logbook:read"})
+     * @Groups({"user:read", "user:write", "realization:read", "logbook:read", "userDescription:read", "userDescription:write"})
+     * @Assert\Regex(pattern="/^[-_.0-9A-Za-z]+$/",
+     *     match=true,
+     * message="Ici, on n'accepte que les - et _ comme caractère spéciaux !"
+     * )
+     * @Assert\NotBlank(message="Et on t'appelle comment dans nos email, nous? :( ")
+     * @Assert\Length(
+     *      min = 3,
+     *      max = 25,
+     *      minMessage = "Allez, un petit effort ! Il te faut au moins {{ limit }} caractères",
+     *      maxMessage = "Un surnom ça nous va très bien sinon..."
+     * )
+     * 
      */
     private $pseudo;
 

@@ -46,7 +46,7 @@ class ProjectDescriptionTest extends TestCase{
         $response = $this->projectDescription->setProject($value);
         
         self::assertInstanceOf(ProjectDescription::class, $response);
-        self::assertEquals($value, $this->projectDescription->getProject());
+        self::assertInstanceOf(Project::class, $this->projectDescription->getProject());
     }
 
 }

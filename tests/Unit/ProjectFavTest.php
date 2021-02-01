@@ -22,7 +22,7 @@ class ProjectFavTest extends TestCase{
         $response = $this->projectFav->setUser($value);
         
         self::assertInstanceOf(ProjectFav::class, $response);
-        self::assertEquals($value, $this->projectFav->getUser());
+        self::assertInstanceOf(User::class, $this->projectFav->getUser());
     }
 
     public function testGetProject(){
@@ -30,7 +30,7 @@ class ProjectFavTest extends TestCase{
         $response = $this->projectFav->setProject($value);
         
         self::assertInstanceOf(ProjectFav::class, $response);
-        self::assertEquals($value, $this->projectFav->getProject());
+        self::assertInstanceOf(Project::class, $this->projectFav->getProject());
     }
    
 }

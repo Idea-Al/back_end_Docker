@@ -27,32 +27,47 @@ class JobTest extends TestCase{
 
     public function testGetUsers(){
 
-        for($i = 1; $i <= 4; $i++ )
-        {
-            $values[] = new User;
-        }        
-     
-        foreach($values as $value){
-            $response = $this->job->addUser($value);
-        }
-        
+        $value = new User;
+        $value1 = new User;
+
+        $this->job->addUser($value);
+        $this->job->addUser($value1);
+
+        self::assertCount(2, $this->job->getUsers());
+        self::assertTrue($this->job->getUsers()->contains($value));
+        self::assertTrue($this->job->getUsers()->contains($value1));
+
+        $response = $this->job->removeUser($value1);
+
         self::assertInstanceOf(Job::class, $response);
-        self::assertCount(4, $this->job->getUsers());
+        self::assertCount(1, $this->job->getUsers());
+        self::assertTrue($this->job->getUsers()->contains($value));
+        self::assertFalse($this->job->getUsers()->contains($value1));
+
     }
 
     public function testGetProjects(){
 
-        for($i = 1; $i <= 3; $i++ )
-        {
-            $values[] = new Project;
-        }        
-     
-        foreach($values as $value){
-            $response = $this->job->addProject($value);
-        }
-        
-        self::assertInstanceOf(Job::class, $response);
-        self::assertCount(3, $this->job->getProjects());
-    }
+        $value = new Project;
+        $value1 = new Project;
+        $value2 = new Project;
 
+        $this->job->addProject($value);
+        $this->job->addProject($value1);
+        $this->job->addProject($value2);
+
+        self::assertCount(3, $this->job->getProjects());
+        self::assertTrue($this->job->getProjects()->contains($value));
+        self::assertTrue($this->job->getProjects()->contains($value1));
+        self::assertTrue($this->job->getProjects()->contains($value2));
+
+        $response = $this->job->removeProject($value1);
+
+        self::assertInstanceOf(Job::class, $response);
+        self::assertCount(2, $this->job->getProjects());
+        self::assertTrue($this->job->getProjects()->contains($value));
+        self::assertFalse($this->job->getProjects()->contains($value1));
+        self::assertTrue($this->job->getProjects()->contains($value2));
+
+    }
 }

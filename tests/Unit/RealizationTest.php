@@ -4,6 +4,7 @@ namespace App\Tests\Unit;
 
 use App\Entity\Realization;
 use App\Entity\Techno;
+use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
 class RealizationTest extends TestCase{
@@ -71,14 +72,34 @@ class RealizationTest extends TestCase{
     }
 
     public function testGetTechnos(){
-        for($i = 1; $i <= 5; $i++){
-            $values[] = new Techno;
-        }
-        foreach($values as $value){
-            $response = $this->realization->addTechno($value);
-        }
+        $value = new Techno;
+        $value1 = new Techno;
+        $value2 = new Techno;
+
+        $this->realization->addTechno($value);
+        $this->realization->addTechno($value1);
+        $this->realization->addTechno($value2);
+
+        self::assertCount(3, $this->realization->getTechnos());
+        self::assertTrue($this->realization->getTechnos()->contains($value));
+        self::assertTrue($this->realization->getTechnos()->contains($value1));
+        self::assertTrue($this->realization->getTechnos()->contains($value2));
+
+        $response = $this->realization->removeTechno($value1);
 
         self::assertInstanceOf(Realization::class, $response);
-        self::assertCount(5, $this->realization->getTechnos());
+        self::assertCount(2, $this->realization->getTechnos());
+        self::assertTrue($this->realization->getTechnos()->contains($value));
+        self::assertFalse($this->realization->getTechnos()->contains($value1));
+        self::assertTrue($this->realization->getTechnos()->contains($value2));
+    }
+
+    public function testGetUser(){
+        $value = new User;
+        
+        $response = $this->realization->setUser($value);
+
+        self::assertInstanceOf(Realization::class, $response);
+        self::assertInstanceOf(User::class, $this->realization->getUser());
     }
 }

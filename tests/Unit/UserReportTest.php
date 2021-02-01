@@ -22,14 +22,14 @@ class UserReportTest extends TestCase{
         $response = $this->userReport->setReporter($value);
         
         self::assertInstanceOf(UserReport::class, $response);
-        self::assertEquals($value, $this->userReport->getReporter());
+        self::assertInstanceOf(User::class, $this->userReport->getReporter());
     }
     public function testGetReportee(){
         $value = new User;
         $response = $this->userReport->setReportee($value);
         
         self::assertInstanceOf(UserReport::class, $response);
-        self::assertEquals($value, $this->userReport->getReportee());
+        self::assertInstanceOf(User::class, $this->userReport->getReportee());
     }
 
     public function testGetReason(){
@@ -37,7 +37,7 @@ class UserReportTest extends TestCase{
         $response = $this->userReport->setReason($value);
         
         self::assertInstanceOf(UserReport::class, $response);
-        self::assertEquals($value, $this->userReport->getReason());
+        self::assertInstanceOf(Complaint::class, $this->userReport->getReason());
     }
     
     public function testGetCustomReason(){
@@ -49,11 +49,19 @@ class UserReportTest extends TestCase{
     }
 
     public function testGetScreen(){
-        $value = 'Ya rien a faire';
+        $value = 'screen conversation';
         $response = $this->userReport->setScreen($value);
         
         self::assertInstanceOf(UserReport::class, $response);
         self::assertEquals($value, $this->userReport->getScreen());
+    }
+
+    public function testGetScreen2(){
+        $value = 'autre screen conversation';
+        $response = $this->userReport->setScreen2($value);
+        
+        self::assertInstanceOf(UserReport::class, $response);
+        self::assertEquals($value, $this->userReport->getScreen2());
     }
 
     public function testGetIsConfirmed(){

@@ -30,7 +30,7 @@ class LogbookTest extends TestCase{
         $response = $this->logbook->setProject($value);
         
         self::assertInstanceOf(Logbook::class, $response);
-        self::assertEquals($value, $this->logbook->getProject());
+        self::assertInstanceOf(Project::class, $this->logbook->getProject());
     }
 
     public function testGetUser(){
@@ -38,7 +38,7 @@ class LogbookTest extends TestCase{
         $response = $this->logbook->setUser($value);
         
         self::assertInstanceOf(Logbook::class, $response);
-        self::assertEquals($value, $this->logbook->getUser());
+        self::assertInstanceOf(User::class, $this->logbook->getUser());
     }
 
     public function testGetCreatedAt(){

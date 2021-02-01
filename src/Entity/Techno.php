@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 
 /**
@@ -29,6 +31,12 @@ class Techno
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"project:read", "realization:read", "techno:read", "user:read"})
+     *     * @Assert\NotBlank
+     * @Assert\Regex(
+     *     pattern="/\d/",
+     *     match=false,
+     *     message="Un motif ne peut pas contenir de nombre"
+     * )
      */
     private $name;
 

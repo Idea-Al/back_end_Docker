@@ -21,7 +21,7 @@ class UserFavTest extends TestCase{
         $response = $this->userFav->setUserLiked($value);
 
         self::assertInstanceOf(UserFav::class, $response);
-        self::assertEquals($value, $this->userFav->getUserLiked());
+        self::assertInstanceOf(User::class, $this->userFav->getUserLiked());
         
     }
 
@@ -30,7 +30,7 @@ class UserFavTest extends TestCase{
         $response = $this->userFav->setUserLike($value);
 
         self::assertInstanceOf(UserFav::class, $response);
-        self::assertEquals($value, $this->userFav->getUserLike());
+        self::assertInstanceOf(User::class, $this->userFav->getUserLike());
         
     }
 

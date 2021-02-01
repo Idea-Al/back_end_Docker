@@ -36,6 +36,7 @@ public function testGetEmail(){
     self::assertInstanceOf(User::class, $response);
     self::assertEquals($value, filter_var($this->user->getEmail(), FILTER_VALIDATE_EMAIL));
     self::assertEquals($value, $this->user->getUsername());
+    self::assertEquals($value, $this->user->getEmail());
 }
 
     public function testGetPseudo(){
@@ -59,6 +60,7 @@ public function testGetEmail(){
 
     public function testGetPlainPassword(){
         $value = 'password';
+
         $response = $this->user->setPlainPassword($value);
 
         self::assertInstanceOf(User::class, $response);
@@ -153,135 +155,240 @@ public function testGetEmail(){
         $response = $this->user->setDescription($value);
         
         self::assertInstanceOf(User::class, $response);
-        self::assertEquals($value, $this->user->getDescription());
+        self::assertInstanceOf(UserDescription::class, $this->user->getDescription());
     }
 
     public function testGetFavoriteProjects(){
 
-        for($i = 1; $i <= 3; $i++ )
-        {
-            $values[] = new ProjectFav;
-        }        
-     
+        $value = new ProjectFav;
+        $value1 = new ProjectFav;
+        $value2 = new ProjectFav;
 
-        foreach($values as $value){
-        $response = $this->user->addFavoriteProject($value);
-    }
-        
-        self::assertInstanceOf(User::class, $response);
+        $this->user->addFavoriteProject($value);
+        $this->user->addFavoriteProject($value1);
+        $this->user->addFavoriteProject($value2);
+
         self::assertCount(3, $this->user->getFavoriteProjects());
+        self::assertTrue($this->user->getFavoriteProjects()->contains($value));
+        self::assertTrue($this->user->getFavoriteProjects()->contains($value1));
+        self::assertTrue($this->user->getFavoriteProjects()->contains($value2));
+
+        $response = $this->user->removeFavoriteProject($value);
+        $response = $this->user->removeFavoriteProject($value1);
+
+        self::assertInstanceOf(User::class, $response);
+        self::assertCount(1, $this->user->getFavoriteProjects());
+        self::assertFalse($this->user->getFavoriteProjects()->contains($value));
+        self::assertFalse($this->user->getFavoriteProjects()->contains($value1));
+        self::assertTrue($this->user->getFavoriteProjects()->contains($value2));
     }
 
     public function testGetLearnings(){
 
+        $value = new Learning;
+        $value1 = new Learning;
+        $value2 = new Learning;
 
-        for($i = 1; $i <= 4; $i++ )
-        {
-            $values[] = new Learning;
-        }        
-               foreach($values as $value){
-        $response = $this->user->addLearning($value);
-    }
-        
+        $this->user->addLearning($value);
+        $this->user->addLearning($value1);
+        $this->user->addLearning($value2);
+
+        self::assertCount(3, $this->user->getLearnings());
+        self::assertTrue($this->user->getLearnings()->contains($value));
+        self::assertTrue($this->user->getLearnings()->contains($value1));
+        self::assertTrue($this->user->getLearnings()->contains($value2));
+
+        $response = $this->user->removeLearning($value);
+        $response = $this->user->removeLearning($value1);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(4, $this->user->getLearnings());
+        self::assertCount(1, $this->user->getLearnings());
+        self::assertFalse($this->user->getLearnings()->contains($value));
+        self::assertFalse($this->user->getLearnings()->contains($value1));
+        self::assertTrue($this->user->getLearnings()->contains($value2));
     }   
 
 
     public function testGetFriends(){
-        for($i = 1; $i <= 10; $i++){
-            $values[] = new UserFriend;
-        }
+        $value = new UserFriend;
+        $value1 = new UserFriend;
+        $value2 = new UserFriend;
 
-        foreach($values as $value){
-            $response = $this->user->addFriend($value);
-        }
+        $this->user->addFriend($value);
+        $this->user->addFriend($value1);
+        $this->user->addFriend($value2);
+
+        self::assertCount(3, $this->user->getFriends());
+        self::assertTrue($this->user->getFriends()->contains($value));
+        self::assertTrue($this->user->getFriends()->contains($value1));
+        self::assertTrue($this->user->getFriends()->contains($value2));
+
+        $response = $this->user->removeFriend($value);
+        $response = $this->user->removeFriend($value1);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(10, $this->user->getFriends());
+        self::assertCount(1, $this->user->getFriends());
+        self::assertFalse($this->user->getFriends()->contains($value));
+        self::assertFalse($this->user->getFriends()->contains($value1));
+        self::assertTrue($this->user->getFriends()->contains($value2));
     }
 
     public function testGetFriendWithMe(){
-        for($i = 1; $i <= 10; $i++){
-            $values[] = new UserFriend;
-        }
+        $value = new UserFriend;
+        $value1 = new UserFriend;
+        $value2 = new UserFriend;
 
-        foreach($values as $value){
-            $response = $this->user->addFriendWithMe($value);
-        }
+        $this->user->addFriendWithMe($value);
+        $this->user->addFriendWithMe($value1);
+        $this->user->addFriendWithMe($value2);
+
+        self::assertCount(3, $this->user->getFriendWithMe());
+        self::assertTrue($this->user->getFriendWithMe()->contains($value));
+        self::assertTrue($this->user->getFriendWithMe()->contains($value1));
+        self::assertTrue($this->user->getFriendWithMe()->contains($value2));
+
+        $response = $this->user->removeFriendWithMe($value);
+        $response = $this->user->removeFriendWithMe($value1);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(10, $this->user->getFriendWithMe());
+        self::assertCount(1, $this->user->getFriendWithMe());
+        self::assertFalse($this->user->getFriendWithMe()->contains($value));
+        self::assertFalse($this->user->getFriendWithMe()->contains($value1));
+        self::assertTrue($this->user->getFriendWithMe()->contains($value2));
     }
 
     public function testGetReportedUsers(){
-        for($i = 1; $i <= 10; $i++){
-            $values[] = new UserReport;
-        }
+        $value = new UserReport;
+        $value1 = new UserReport;
+        $value2 = new UserReport;
 
-        foreach($values as $value){
-            $response = $this->user->addReportedUser($value);
-        }
+        $this->user->addReportedUser($value);
+        $this->user->addReportedUser($value1);
+        $this->user->addReportedUser($value2);
+
+        self::assertCount(3, $this->user->getReportedUsers());
+        self::assertTrue($this->user->getReportedUsers()->contains($value));
+        self::assertTrue($this->user->getReportedUsers()->contains($value1));
+        self::assertTrue($this->user->getReportedUsers()->contains($value2));
+
+        $response = $this->user->removeReportedUser($value);
+        $response = $this->user->removeReportedUser($value1);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(10, $this->user->getReportedUsers());
+        self::assertCount(1, $this->user->getReportedUsers());
+        self::assertFalse($this->user->getReportedUsers()->contains($value));
+        self::assertFalse($this->user->getReportedUsers()->contains($value1));
+        self::assertTrue($this->user->getReportedUsers()->contains($value2));
     }
 
     public function testGetReportedBy(){
-        for($i = 1; $i <= 10; $i++){
-            $values[] = new UserReport;
-        }
+        $value = new UserReport;
+        $value1 = new UserReport;
+        $value2 = new UserReport;
 
-        foreach($values as $value){
-            $response = $this->user->addReportedBy($value);
-        }
+        $this->user->addReportedBy($value);
+        $this->user->addReportedBy($value1);
+        $this->user->addReportedBy($value2);
+
+        self::assertCount(3, $this->user->getReportedBy());
+        self::assertTrue($this->user->getReportedBy()->contains($value));
+        self::assertTrue($this->user->getReportedBy()->contains($value1));
+        self::assertTrue($this->user->getReportedBy()->contains($value2));
+
+        $response = $this->user->removeReportedBy($value);
+        $response = $this->user->removeReportedBy($value1);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(10, $this->user->getReportedBy());
+        self::assertCount(1, $this->user->getReportedBy());
+        self::assertFalse($this->user->getReportedBy()->contains($value));
+        self::assertFalse($this->user->getReportedBy()->contains($value1));
+        self::assertTrue($this->user->getReportedBy()->contains($value2));
     }
 
     public function testGetMessagesSent(){
-        for($i = 1; $i <= 10; $i++){
-            $values[] = new Message;
-        }
+        $value = new Message;
+        $value1 = new Message;
+        $value2 = new Message;
 
-        foreach($values as $value){
-            $response = $this->user->addMessagesSent($value);
-        }
+        $this->user->addMessagesSent($value);
+        $this->user->addMessagesSent($value1);
+        $this->user->addMessagesSent($value2);
+
+        self::assertCount(3, $this->user->getMessagesSent());
+        self::assertTrue($this->user->getMessagesSent()->contains($value));
+        self::assertTrue($this->user->getMessagesSent()->contains($value1));
+        self::assertTrue($this->user->getMessagesSent()->contains($value2));
+
+        $response = $this->user->removeMessagesSent($value);
+        $response = $this->user->removeMessagesSent($value1);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(10, $this->user->getMessagesSent());
+        self::assertCount(1, $this->user->getMessagesSent());
+        self::assertFalse($this->user->getMessagesSent()->contains($value));
+        self::assertFalse($this->user->getMessagesSent()->contains($value1));
+        self::assertTrue($this->user->getMessagesSent()->contains($value2));
     }
 
     public function testGetMessagesReceived(){
-        for($i = 1; $i <= 10; $i++){
-            $values[] = new Message;
-        }
+        $value = new Message;
+        $value1 = new Message;
+        $value2 = new Message;
 
-        foreach($values as $value){
-            $response = $this->user->addMessagesReceived($value);
-        }
+        $this->user->addMessagesReceived($value);
+        $this->user->addMessagesReceived($value1);
+        $this->user->addMessagesReceived($value2);
+
+        self::assertCount(3, $this->user->getMessagesReceived());
+        self::assertTrue($this->user->getMessagesReceived()->contains($value));
+        self::assertTrue($this->user->getMessagesReceived()->contains($value1));
+        self::assertTrue($this->user->getMessagesReceived()->contains($value2));
+
+        $response = $this->user->removeMessagesReceived($value);
+        $response = $this->user->removeMessagesReceived($value1);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(10, $this->user->getMessagesReceived());
+        self::assertCount(1, $this->user->getMessagesReceived());
+        self::assertFalse($this->user->getMessagesReceived()->contains($value));
+        self::assertFalse($this->user->getMessagesReceived()->contains($value1));
+        self::assertTrue($this->user->getMessagesReceived()->contains($value2));
     }
 
     public function testGetSendFav(){
-        for($i = 1; $i <= 10; $i++){
-            $values[] = new UserFav;
-        }
+        $value = new UserFav;
+        $value1 = new UserFav;
 
-        foreach($values as $value){
-            $response = $this->user->addSendFav($value);
-        }
+        $this->user->addSendFav($value);
+        $this->user->addSendFav($value1);
+
+        self::assertCount(2, $this->user->getSendFav());
+        self::assertTrue($this->user->getSendFav()->contains($value));
+        self::assertTrue($this->user->getSendFav()->contains($value1));
+
+        $response = $this->user->removeSendFav($value);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(10, $this->user->getSendFav());
+        self::assertCount(1, $this->user->getSendFav());
+        self::assertFalse($this->user->getSendFav()->contains($value));
+        self::assertTrue($this->user->getSendFav()->contains($value1));
     }
 
     public function testGetReceiveFav(){
-        for($i = 1; $i <= 10; $i++){
-            $values[] = new UserFav;
-        }
+        $value = new UserFav;
+        $value1 = new UserFav;
 
-        foreach($values as $value){
-            $response = $this->user->addReceiveFav($value);
-        }
+        $this->user->addReceiveFav($value);
+        $this->user->addReceiveFav($value1);
+
+        self::assertCount(2, $this->user->getReceiveFav());
+        self::assertTrue($this->user->getReceiveFav()->contains($value));
+        self::assertTrue($this->user->getReceiveFav()->contains($value1));
+
+        $response = $this->user->removeReceiveFav($value);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(10, $this->user->getReceiveFav());
+        self::assertCount(1, $this->user->getReceiveFav());
+        self::assertFalse($this->user->getReceiveFav()->contains($value));
+        self::assertTrue($this->user->getReceiveFav()->contains($value1));
     }
 
     public function testGetRhythm(){
@@ -290,34 +397,47 @@ public function testGetEmail(){
         $response = $this->user->setRhythm($value);
         
         self::assertInstanceOf(User::class, $response);
-        self::assertEquals($value, $this->user->getRhythm());
+        self::assertInstanceOf(Rhythm::class, $this->user->getRhythm());
     }
 
 
     public function testGetLogbooks(){
 
-        for($i = 1; $i <= 7; $i++){
-            $values[] = new Logbook;
-        }
+        $value = new Logbook;
+        $value1 = new Logbook;
 
-        foreach($values as $value){
-            $response = $this->user->addLogbook($value);
-        }
+        $this->user->addLogbook($value);
+        $this->user->addLogbook($value1);
+
+        self::assertCount(2, $this->user->getLogbooks());
+        self::assertTrue($this->user->getLogbooks()->contains($value));
+        self::assertTrue($this->user->getLogbooks()->contains($value1));
+
+        $response = $this->user->removeLogbook($value);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(7, $this->user->getLogbooks());
+        self::assertCount(1, $this->user->getLogbooks());
+        self::assertFalse($this->user->getLogbooks()->contains($value));
+        self::assertTrue($this->user->getLogbooks()->contains($value1));
     }
 
     public function testGetRealizations(){
+        $value = new Realization;
+        $value1 = new Realization;
 
-        for($i = 1; $i <= 7; $i++){
-            $values[] = new Realization;
-        }
+        $this->user->addRealization($value);
+        $this->user->addRealization($value1);
 
-        foreach($values as $value){
-            $response = $this->user->addRealization($value);
-        }
+        self::assertCount(2, $this->user->getRealizations());
+        self::assertTrue($this->user->getRealizations()->contains($value));
+        self::assertTrue($this->user->getRealizations()->contains($value1));
+
+        $response = $this->user->removeRealization($value);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(7, $this->user->getRealizations());
+        self::assertCount(1, $this->user->getRealizations());
+        self::assertFalse($this->user->getRealizations()->contains($value));
+        self::assertTrue($this->user->getRealizations()->contains($value1));
     }
 
     public function testConfirmationToken(){
@@ -330,18 +450,22 @@ public function testGetEmail(){
 
     public function testGetProjects(){
 
-        for($i = 1; $i <= 3; $i++ )
-        {
-            $values[] = new Project;
-        }        
-     
+        $value = new Project;
+        $value1 = new Project;
 
-        foreach($values as $value){
-        $response = $this->user->addProject($value);
-    }
-        
+        $this->user->addProject($value);
+        $this->user->addProject($value1);
+
+        self::assertCount(2, $this->user->getProjects());
+        self::assertTrue($this->user->getProjects()->contains($value));
+        self::assertTrue($this->user->getProjects()->contains($value1));
+
+        $response = $this->user->removeProject($value);
+
         self::assertInstanceOf(User::class, $response);
-        self::assertCount(3, $this->user->getProjects());
+        self::assertCount(1, $this->user->getProjects());
+        self::assertFalse($this->user->getProjects()->contains($value));
+        self::assertTrue($this->user->getProjects()->contains($value1));
     }
 
 

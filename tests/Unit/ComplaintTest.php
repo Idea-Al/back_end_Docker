@@ -26,18 +26,25 @@ class ComplaintTest extends TestCase{
 
     public function testGetUserReports(){
 
-        for($i = 1; $i <= 4; $i++ )
-        {
-            $values[] = new UserReport;
-        }        
-     
+        $value = new UserReport;
+        $value1 = new UserReport;
+        $value2 = new UserReport;  
 
-        foreach($values as $value){
-        $response = $this->complaint->addUserReport($value);
-    }
-        
+        $this->complaint->addUserReport($value);
+        $this->complaint->addUserReport($value1);
+        $this->complaint->addUserReport($value2);
+
+        self::assertCount(3, $this->complaint->getUserReports());
+        self::assertTrue($this->complaint->getUserReports()->contains($value));
+        self::assertTrue($this->complaint->getUserReports()->contains($value1));
+        self::assertTrue($this->complaint->getUserReports()->contains($value2));
+
+        $response = $this->complaint->removeUserReport($value);
+     
         self::assertInstanceOf(Complaint::class, $response);
-        self::assertCount(4, $this->complaint->getUserReports());
-    }
+        self::assertCount(2, $this->complaint->getUserReports());
+        self::assertFalse($this->complaint->getUserReports()->contains($value));
+        self::assertTrue($this->complaint->getUserReports()->contains($value1));
+        self::assertTrue($this->complaint->getUserReports()->contains($value2));
 
 }
