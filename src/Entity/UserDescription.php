@@ -5,10 +5,19 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\UserDescriptionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
+
 
 /**
  * @ORM\Entity(repositoryClass=UserDescriptionRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"userDescription:read"}},
+ *     denormalizationContext={"groups"={"userDescription:write"}},
+ *     iri="http://schema.org/User"
+ * )
+ * )
  */
 class UserDescription
 {
@@ -21,22 +30,47 @@ class UserDescription
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user:read", "user:write"})
+     * @Assert\NotBlank(message="Il y a bien quelque chose que tu veux apprendre à travers ce projet")
+     * @Assert\Length(
+     *      min = 30,
+     *      max = 350,
+     *      minMessage = "Allez, un petit effort ! Il te faut au moins {{ limit }} caractères",
+     *      maxMessage = "Il te faut vraiment plus de {{ limit }} caractères?? Va à l'essentiel."
+     * )
      */
     private $journey;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"user:read", "user:write", "userDescription:read", "userDescription:write"})
+     * @Assert\NotBlank(message="Il y a bien quelque chose que tu veux apprendre à travers ce projet")
+     * @Assert\Length(
+     *      min = 30,
+     *      max = 350,
+     *      minMessage = "Allez, un petit effort ! Il te faut au moins {{ limit }} caractères",
+     *      maxMessage = "Il te faut vraiment plus de {{ limit }} caractères?? Va à l'essentiel."
+     * )
      */
     private $purpose;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups({"user:read", "user:write","userDescription:read", "userDescription:write" })
+     * @Assert\NotBlank(message="Il y a bien quelque chose que tu veux apprendre à travers ce projet")
+     * @Assert\Length(
+     *      min = 30,
+     *      max = 350,
+     *      minMessage = "Allez, un petit effort ! Il te faut au moins {{ limit }} caractères",
+     *      maxMessage = "Il te faut vraiment plus de {{ limit }} caractères?? Va à l'essentiel."
+     * )
      */
     private $aboutMe;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="description")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @Groups({"userDescription:read", "userDescription:write" })
      */
     private $user;
 

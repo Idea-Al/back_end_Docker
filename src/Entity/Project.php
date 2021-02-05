@@ -3,92 +3,136 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=ProjectRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"project:read"}},
+ *     denormalizationContext={"groups"={"project:write"}},
+ *     iri="http://schema.org/Project"
+ * )
  */
+
 class Project
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"project:read", "techno:read","projectDescription:read", "projectDescription:write"})
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255) 
+     * @Groups({"project:read", "techno:read", "logbook:read", "project:write"})
+     * @Assert\NotBlank(message="Alors, il n'a pas de nom ton projet?")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Un peu plus d'inspiration s'il te plait car moins de {{ limit }} caractères ce n'est pas assez mon ami",
+     *      maxMessage = "Oulaah {{ limit }} caractères pour le nom du projet? Tu veux pas lui donner un surnom plutôt? "
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"project:read", "project:write"})
+     * @Assert\NotBlank(message="Alors, il n'a pas de nom ton projet?")
+     * @Assert\Length(
+     *      min = 50,
+     *      max = 500,
+     *      minMessage = "Moins de {{ limit }} caractères? C'est un résumé d'un résumé la... ",
+     *      maxMessage = "{{ limit }} caractères?? Pas la peine de nous écrire un roman non plus... "
+     * )
      */
     private $resume;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"project:read", "project:write"})
+     *  @Assert\Range(
+     *      min = 2,
+     *      max = 4
+     * )
      */
-    private $max_participant;
+    private $maxParticipant;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("project:read")
      */
     private $is_moderated;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"project:read","project:write"})
+     * 
      */
     private $picture;
 
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"project:read","project:write"})
      */
     private $link;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("project:read")
      */
     private $created_at;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime",nullable=true)
      */
     private $updated_at;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Techno::class, inversedBy="projects")
+     * @ORM\ManyToMany(targetEntity=Techno::class, inversedBy="projects",cascade={"persist"})
+     * @Groups({"project:read","project:write"})
      */
     private $technos;
 
     /**
      * @ORM\OneToMany(targetEntity=ProjectFav::class, mappedBy="project",  orphanRemoval=true)
+     * @Groups({"project:read"})
      */
     private $favorites;
     
     /**
      * @ORM\OneToOne(targetEntity=ProjectDescription::class, mappedBy="project", cascade={"persist", "remove"})
+     * @Groups({"project:read","project:write"})
      */
     private $projectDescription;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"project:read"})
      */
     private $is_completed;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"project:read", "project:write"})
      */
     private $slug;
 
     /**
      * @ORM\ManyToMany(targetEntity=Job::class, inversedBy="projects")
+     * @Groups({"project:read", "project:write"})
+     * @ApiProperty(iri="http://schema.org/Jobs")
      */
     private $jobs;
 
@@ -99,8 +143,30 @@ class Project
 
     /**
      * @ORM\OneToMany(targetEntity=Logbook::class, mappedBy="project")
+     * @Groups("project:read")
      */
     private $logbooks;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="projects")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"project:read", "project:write"})
+     */
+    private $creator;
+
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"project:read"})
+     */
+    private $isFull;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"project:read", "project:write"})
+     */
+    private $hasOwner;
+
 
     public function __construct()
     {
@@ -111,6 +177,10 @@ class Project
         $this->jobs = new ArrayCollection();
         $this->messages = new ArrayCollection();
         $this->logbooks = new ArrayCollection();
+        $this->is_completed = false;
+        $this->is_moderated = false;
+        $this->isFull = false;
+        
     }
 
     public function getId(): ?int
@@ -120,11 +190,13 @@ class Project
 
     public function getName(): ?string
     {
+        
         return $this->name;
     }
 
     public function setName(string $name): self
     {
+
         $this->name = $name;
 
         return $this;
@@ -144,12 +216,14 @@ class Project
 
     public function getMaxParticipant(): ?int
     {
-        return $this->max_participant;
+        return $this->maxParticipant;
     }
 
-    public function setMaxParticipant(int $max_participant): self
+
+    public function setMaxParticipant(int $maxParticipant): self
     {
-        $this->max_participant = $max_participant;
+
+        $this->maxParticipant = $maxParticipant;
 
         return $this;
     }
@@ -396,6 +470,40 @@ class Project
         return $this;
     }
 
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): self
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
 
 
+    public function getIsFull(): ?bool
+    {
+        return $this->isFull;
+    }
+
+    public function setIsFull(bool $isFull): self
+    {
+        $this->isFull = $isFull;
+
+        return $this;
+    }
+
+    public function getHasOwner(): ?bool
+    {
+        return $this->hasOwner;
+    }
+
+    public function setHasOwner(bool $hasOwner): self
+    {
+        $this->hasOwner = $hasOwner;
+
+        return $this;
+    }
 }

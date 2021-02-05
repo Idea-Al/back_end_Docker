@@ -41,6 +41,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function supports(Request $request)
     {
+        //dd(self::LOGIN_ROUTE ,$request->attributes->get('_route'));
+        
         return self::LOGIN_ROUTE === $request->attributes->get('_route')
             && $request->isMethod('POST');
     }
@@ -62,6 +64,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
+
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             throw new InvalidCsrfTokenException();
@@ -94,13 +97,16 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     {
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
+          
         }
 
         return new RedirectResponse($this->urlGenerator->generate('default'));
+       
     }
 
     protected function getLoginUrl()
     {
+     //   dd($this->urlGenerator->generate(self::LOGIN_ROUTE));
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
 }

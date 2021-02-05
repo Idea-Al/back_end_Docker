@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Api\FilterInterface;
 use App\Repository\UserRepository;
@@ -18,10 +19,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
- *       attributes={
- *       "normalizationContext"={"groups"={"user:read"}},
- *       "denormalizationContext"={"groups"={"user:write"}}, 
- *      } 
+ *     normalizationContext={"groups"={"user:read"}},
+ *     denormalizationContext={"groups"={"user:write"}},
+ *     iri="http://schema.org/User"
  * )
  * 
  * @UniqueEntity(fields={"pseudo"})
@@ -33,21 +33,31 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("user:read")
+     * @Groups({"user:read", "project:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:read", "user:write"})
-     *
+     * @Groups({"user:read", "user:write", "realization:read", "logbook:read", "userDescription:read", "userDescription:write"})
+     * @Assert\Regex(pattern="/^[-_.0-9A-Za-z]+$/",
+     *     match=true,
+     * message="Ici, on n'accepte que les - et _ comme caractère spéciaux !"
+     * )
+     * @Assert\NotBlank(message="Et on t'appelle comment dans nos email, nous? :( ")
+     * @Assert\Length(
+     *      min = 3,
+     *      max = 25,
+     *      minMessage = "Allez, un petit effort ! Il te faut au moins {{ limit }} caractères",
+     *      maxMessage = "Un surnom ça nous va très bien sinon..."
+     * )
+     * 
      */
     private $pseudo;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"user:read", "user:write"})
-     * 
      * @Assert\NotBlank()
      * @Assert\Email()
      */
@@ -56,15 +66,18 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string", length=255)
-     *
+     * 
      */
     private $password;
-
-
+     
     /**
      * @Groups("user:write")
      * 
+     * @SerializedName("password")
      *
+     * @Assert\NotBlank(message="New password can not be blank.")
+     * @Assert\Regex(pattern="/^(?=.{10,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/i",
+     *  message="Password is required to be minimum 6 chars in length and to include at least one letter and one number and one special character.")
      */
     private $plainPassword;
 
@@ -84,28 +97,27 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="boolean")
      */
-    private $status;
+    private $status = true ;
 
     /**
      * @ORM\Column(type="boolean")
      * @Groups("user:read")
      */
-    private $is_active;
+    private $is_active = false;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $is_banned;
+    private $is_banned = false;
 
     /**
      * @ORM\Column(type="datetime")
      * @Groups("user:read")
      */
-    private $created_at;
+    private $created_at ;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Groups("user:read")
+     * @ORM\Column(type="datetime", nullable=true))
      */
     private $updated_at;
 
@@ -117,38 +129,44 @@ class User implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity=Job::class, inversedBy="users")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups("user:read")
      */
     private $job;
 
     /**
      * @ORM\OneToOne(targetEntity=UserDescription::class, mappedBy="user", orphanRemoval=true)
-     *
+     * @Groups({"user:read",  "user:write"})
      */
     private $description;
 
     /**
      * @ORM\OneToMany(targetEntity=ProjectFav::class, mappedBy="user",  orphanRemoval=true)
+     * @Groups({"user:read", "user:write"})
      */
     private $favorite_projects;
 
     /**
      * @ORM\OneToMany(targetEntity=Learning::class, mappedBy="user", orphanRemoval=true)
+     *  @Groups({"user:read", "user:write"})
      */
     private $learnings;
 
     /**
      * @ORM\OneToMany(targetEntity=UserFriend::class, mappedBy="user")
+     *  @Groups({"user:read", "user:write"})
      */
     private $friends;
 
     /**
      * @ORM\OneToMany(targetEntity=UserFriend::class, mappedBy="friend")
+     * @Groups({"user:read", "user:write"})
      */
     private $friendWithMe;
 
 
     /**
      * @ORM\OneToMany(targetEntity=UserReport::class, mappedBy="reporter", orphanRemoval=true)
+     * 
      */
     private $reportedUsers;
 
@@ -164,7 +182,6 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Message::class, mappedBy="receiver")
-     * @Groups("user:read")
      */
     private $messages_received;
 
@@ -185,6 +202,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Rhythm::class)
+     * @Groups({"user:read", "user:write"})
      */
     private $rhythm;
 
@@ -195,16 +213,24 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Realization::class, mappedBy="user",cascade={"persist"})
+     * @Groups({"user:read", "user:write"})
      */
     private $realizations;
+
+     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $confirmationToken;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="creator", orphanRemoval=true)
+     */
+    private $projects;
 
     public function __construct()
     {
         $this->created_at = new \DateTime();
         $this->updated_at = new \DateTime();
-        $this->is_active = false;
-        $this->is_banned = false;
-        $this->status = true;
         $this->logbooks = new ArrayCollection();
         $this->favorite_projects = new ArrayCollection();
         $this->learnings = new ArrayCollection();
@@ -217,6 +243,7 @@ class User implements UserInterface
         $this->send_fav = new ArrayCollection();
         $this->receive_fav = new ArrayCollection();
         $this->realizations = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     /**
@@ -439,9 +466,7 @@ class User implements UserInterface
 
         return $this;
     }
-
-
-
+    
     public function getDescription(): ?UserDescription
     {
         return $this->description;
@@ -808,13 +833,52 @@ class User implements UserInterface
         return $this->plainPassword;
     }
 
-    /*
-    * @SerializedName("moui")
-    */
     public function setPlainPassword(string $plainPassword): self
     {
         $this->plainPassword = $plainPassword;
         return $this;
     }
 
+
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken(?string $confirmationToken): self
+    {
+        $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): self
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getCreator() === $this) {
+                $project->setCreator(null);
+            }
+        }
+
+        return $this;
+    }
 }
