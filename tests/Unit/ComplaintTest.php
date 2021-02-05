@@ -48,3 +48,4 @@ class ComplaintTest extends TestCase{
         self::assertTrue($this->complaint->getUserReports()->contains($value2));
 
 }
+}

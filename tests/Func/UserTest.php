@@ -12,10 +12,12 @@ class UserTest extends AbstractEndpoint{
         
         $response = $this->getResponseFromRequest('GET', '/api/users');
         $responseContent = $response->getContent();
+        dd($responseContent);
         
         self::assertEquals(200, $response->getStatusCode());
         self::assertNotEmpty($response);
         self::assertJson($responseContent);
+        
     }   
 
     public function testPostUser(){ 
