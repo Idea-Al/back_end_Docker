@@ -7,6 +7,7 @@ use App\Repository\ComplaintRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ComplaintRepository::class)
@@ -23,6 +24,12 @@ class Complaint
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank(message="Ce champs est obligatoire. Veuillez le remplir")
+     * @Assert\Regex(
+     *     pattern="/\d/",
+     *     match=false,
+     *     message="Ce champs n'accepte pas les nombres"
+     * )
      */
     private $name;
 
@@ -85,3 +92,4 @@ class Complaint
 
 
 }
+

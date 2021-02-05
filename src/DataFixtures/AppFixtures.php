@@ -178,6 +178,8 @@ class AppFixtures extends Fixture
             $project->setPicture($faker->text);
             $project->setLink($faker->url);
             $project->setIsCompleted($faker->boolean(50));
+            $project->setHasOwner($faker->boolean(50));
+            $project->setIsFull($faker->boolean(50));
             $project->setSlug($this->slugger->slugify($name->getName()));
             for ($j = 0; $j < mt_rand(1, 3); $j++) {
                 // get a random techno
@@ -195,6 +197,10 @@ class AppFixtures extends Fixture
                     $project->addJob($projectJob);
                 }
             }
+                // get a random creator
+                $creator = $userList[mt_rand(0, count($userList) - 1)];
+                $project->setCreator($creator);
+               
 
             $projectDescription = new ProjectDescription;
             $projectDescription->setPurpose($faker->text);

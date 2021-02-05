@@ -5,6 +5,9 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\LearningRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=LearningRepository::class)
@@ -22,18 +25,21 @@ class Learning
     /**
      * @ORM\ManyToOne(targetEntity=Techno::class, inversedBy="learnings")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("user:read")
      */
     private $techno;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="learnings")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("techno:read")
      */
     private $user ;
 
     /**
      * @ORM\ManyToOne(targetEntity=Level::class, inversedBy="learnings")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("user:read")
      */
     private $level ;
 

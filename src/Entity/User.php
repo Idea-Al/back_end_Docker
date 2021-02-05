@@ -33,14 +33,25 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("user:read")
+     * @Groups({"user:read", "project:write"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:read", "user:write"})
-     * @ApiProperty(iri="http://schema.org/pseudo")
+     * @Groups({"user:read", "user:write", "realization:read", "logbook:read", "userDescription:read", "userDescription:write"})
+     * @Assert\Regex(pattern="/^[-_.0-9A-Za-z]+$/",
+     *     match=true,
+     * message="Ici, on n'accepte que les - et _ comme caractère spéciaux !"
+     * )
+     * @Assert\NotBlank(message="Et on t'appelle comment dans nos email, nous? :( ")
+     * @Assert\Length(
+     *      min = 3,
+     *      max = 25,
+     *      minMessage = "Allez, un petit effort ! Il te faut au moins {{ limit }} caractères",
+     *      maxMessage = "Un surnom ça nous va très bien sinon..."
+     * )
+     * 
      */
     private $pseudo;
 
@@ -58,8 +69,6 @@ class User implements UserInterface
      * 
      */
     private $password;
-
-
      
     /**
      * @Groups("user:write")
@@ -126,7 +135,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToOne(targetEntity=UserDescription::class, mappedBy="user", orphanRemoval=true)
-     * @Groups({"user:read", "user:write"})
+     * @Groups({"user:read",  "user:write"})
      */
     private $description;
 
@@ -213,6 +222,11 @@ class User implements UserInterface
      */
     private $confirmationToken;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="creator", orphanRemoval=true)
+     */
+    private $projects;
+
     public function __construct()
     {
         $this->created_at = new \DateTime();
@@ -229,6 +243,7 @@ class User implements UserInterface
         $this->send_fav = new ArrayCollection();
         $this->receive_fav = new ArrayCollection();
         $this->realizations = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     /**
@@ -833,6 +848,36 @@ class User implements UserInterface
     public function setConfirmationToken(?string $confirmationToken): self
     {
         $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): self
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getCreator() === $this) {
+                $project->setCreator(null);
+            }
+        }
 
         return $this;
     }
